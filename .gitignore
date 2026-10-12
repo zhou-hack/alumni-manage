@@ -1,0 +1,30 @@
+# ===== 构建产物 =====
+target/
+out/
+dist/
+node_modules/
+
+# ===== 依赖与本地环境 =====
+redis/
+nginx/
+nginx-1.30.5/
+*.local
+.DS_Store
+Thumbs.db
+
+# ===== 编辑器与日志 =====
+.idea/
+.vscode/
+.trae/
+logs/
+*.log
+npm-debug.log*
+
+# ===== 其他 =====
+tests/
+REQUIRE.md
+alumni_frontend/
+test/
+
+# ===== 数据库备份产物（scripts/backup.ps1 输出） =====
+backups/

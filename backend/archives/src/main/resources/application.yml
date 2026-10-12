@@ -1,0 +1,36 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: alumni-archives
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/alumni_platform?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    username: ${DB_USER:almuni}
+    password: ${DB_PASSWORD:almuni_dev}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    # 共享单库约定：每个模块使用独立迁移历史表，版本号互不影响
+    table: flyway_history_archives
+    # 单库已由 schema.sql 建好结构（非空）：以 0 为基线，本模块迁移照常执行；全新空库不受影响
+    baseline-on-migrate: true
+    baseline-version: 0
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    serialization:
+      write-dates-as-timestamps: false
+
+app:
+  jwt:
+    # 与 auth 模块同一密钥（auth 签发、各模块本地验签）；生产用 JWT_SECRET 环境变量统一覆盖
+    secret: ${JWT_SECRET:rN7vY2kQ9wE3tU8iO1pA5sD6fG0hJ4lKzXcVbNmQwE=}
+
+logging:
+  level:
+    com.alumni.archives: info

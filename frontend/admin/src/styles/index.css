@@ -1,0 +1,622 @@
+/* 管理后台全局样式：医疗蓝主色 #1F497D + 深海军蓝侧栏 #163760 + 冷蓝白纸面 · 统一无衬线
+   配色对齐「医院护理信息项目管理工作台」医疗蓝白方案 */
+
+:root {
+  /* ---- 主色 · 医疗蓝（承载 El primary / 主按钮 / 高亮 / 激活态） ---- */
+  --brand-50: #eef4fa;
+  --brand-100: #dbe8f5;
+  --brand-200: #bed5eb;
+  --brand-300: #96badc;
+  --brand-400: #5f95c6;
+  --brand-500: #3D7EBB;
+  --brand-600: #2E75B6;
+  --brand-700: #1F497D;
+  --brand-800: #1a3d69;
+  --brand-900: #163760;
+
+  /* ---- 强调（与主色同系，浅阶用于软底 / 徽标） ---- */
+  --accent-50: #eef4fa;
+  --accent-100: #dbe8f5;
+  --accent-200: #bed5eb;
+  --accent-300: #96badc;
+  --accent-400: #5f95c6;
+  --accent-500: #3D7EBB;
+  --accent-600: #2E75B6;
+  --accent-700: #1F497D;
+
+  /* ---- 深色侧栏（深海军蓝，承载品牌 LOGO 渐变与深色导航） ---- */
+  --side: #163760;
+  --side-2: #1F497D;
+  --side-line: #2b5686;
+  --side-ink: #e2ebf5;
+  --side-muted: #9db4cf;
+  --side-dim: #6f8cae;
+
+  /* ---- 灰阶（冷蓝调） ---- */
+  --gray-25: #fbfcfe;
+  --gray-50: #f4f8fd;
+  --gray-100: #eef1f6;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #8a99ad;
+  --gray-600: #5a6a80;
+  --gray-700: #324058;
+  --gray-800: #1f2a40;
+  --gray-900: #1a2434;
+
+  /* ---- 语义色 ---- */
+  --green-50: #e8f4e9;
+  --green-500: #4E9A51;
+  --green-600: #3d8a41;
+  --green-700: #2f7034;
+  --amber-50: #fdf2e2;
+  --amber-500: #E08E31;
+  --amber-700: #b06d16;
+  --red-50: #f8e8e7;
+  --red-500: #C0504D;
+  --red-700: #9d3d3a;
+  --blue-50: #dce9fb;
+  --blue-500: #3D7EBB;
+  --blue-700: #1F497D;
+  --teal-50: #e3f5f5;
+  --teal-500: #17A2A2;
+  --teal-700: #0F9B9B;
+  --purple-50: #efecf5;
+  --purple-500: #7B68A6;
+  --purple-700: #63538a;
+
+  /* ---- 设计稿原始命名别名（与「校友管理平台·设计稿v1」配色一一对应） ---- */
+  --navy: #1F497D;
+  --navy-d: #163760;
+  --navy-l: #2E75B6;
+  --cyan: #0F9B9B;
+  --teal: #17A2A2;
+  --orange: #E08E31;
+  --purple: #7B68A6;
+  --green: #4E9A51;
+  --gold: #C9A227;
+  --pink: #C9738F;
+  --line2: #eef1f6;
+  --txt: #1a2434;
+  --txt2: #5a6a80;
+  --txt3: #8a99ad;
+  --blue: #3D7EBB;
+  --red: #C0504D;
+
+  /* ---- 字体（统一无衬线，去衬线标题 / 去外链字体） ---- */
+  --font-display: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', Roboto, sans-serif;
+  --font-sans: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  /* ---- 圆角 / 阴影（右侧内容区小幅圆角；左侧导航在 AdminLayout 内显式归零保持直角） ---- */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 12px;
+  --radius-full: 8px;
+  --shadow-sm: 0 1px 2px rgba(31, 73, 125, 0.06);
+  --shadow-md: 0 6px 18px rgba(31, 73, 125, 0.07), 0 1px 3px rgba(31, 73, 125, 0.05);
+  --shadow-lg: 0 14px 38px rgba(31, 73, 125, 0.13);
+  --shadow-side: 0 0 0 1px var(--side-line), 0 10px 30px rgba(22, 55, 96, 0.3);
+
+  /* ---- 页面底色与表面（冷蓝白） ---- */
+  --bg: #eef2f7;
+  --bg-soft: #f7f8fa;
+  --surface-1: #ffffff;
+  --surface-2: #f4f8fd;
+  --surface-3: #eef1f6;
+  --text-main: var(--gray-900);
+  --text-sub: var(--gray-600);
+  --text-mute: var(--gray-500);
+  --line: var(--gray-200);
+  --line-strong: var(--gray-300);
+  --brand-sub: var(--brand-700);
+  --brand-soft: var(--brand-50);
+
+  /* ---- 旧变量别名（兼容既有页面） ---- */
+  --brand: var(--brand-700);
+  --brand-2: var(--brand-500);
+  --card: var(--surface-1);
+  /* 注：--gold / --navy 等设计稿原始色名已在上方颜色区定义，
+     这里不再重复声明，避免覆盖（原「去金」别名指向品牌蓝，现改用设计稿真金 #C9A227） */
+
+  /* ---- Element Plus 主题色覆盖 ---- */
+  --el-color-primary: var(--brand-600);
+  --el-color-primary-light-3: var(--brand-400);
+  --el-color-primary-light-5: var(--brand-300);
+  --el-color-primary-light-7: var(--brand-200);
+  --el-color-primary-light-8: var(--brand-100);
+  --el-color-primary-light-9: var(--brand-50);
+  --el-color-primary-dark-2: var(--brand-800);
+  --el-border-radius-base: var(--radius-md);
+  --el-border-radius-small: var(--radius-sm);
+  --el-border-radius-round: var(--radius-full);
+  --el-font-family: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
+.mt-12 {
+  margin-top: 12px;
+}
+
+.ml-4 {
+  margin-left: 4px;
+}
+
+.text-sub {
+  color: var(--text-sub);
+  font-size: 13px;
+}
+
+/* =========================================================================
+ * Element Plus 表格美化
+ * -------------------------------------------------------------------------
+ * 适用：所有 .el-table
+ * 策略：尊重 Element Plus 默认布局（每列 align 控制单元格对齐），
+ *       不强制 padding/text-align，让每列自身决定。
+ * 仅做：表格圆角、辅助类（cell-badge / cell-mono / cell-title）、
+ *      表格卡片外观、分页、空态。
+ * ========================================================================= */
+.el-table {
+  --el-table-border-color: var(--gray-100);
+  --el-table-border: 1px solid var(--gray-100);
+  --el-table-header-bg-color: var(--gray-50);
+  --el-table-header-text-color: var(--gray-700);
+  --el-table-row-hover-bg-color: var(--brand-50);
+  --el-table-current-row-bg-color: var(--brand-50);
+  --el-table-tr-bg-color: var(--surface-1);
+  font-size: 14px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+/* 表头：仅美化外观，颜色 / 字重 / 字号，对齐跟随每列 align */
+.el-table th.el-table__cell {
+  background: var(--gray-50);
+  color: var(--gray-700);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  border-bottom: 1px solid var(--gray-200);
+}
+/* 单元格：仅水平分隔线淡一些，对齐与列宽跟随每列的 align 属性 */
+.el-table td.el-table__cell {
+  border-bottom: 1px solid var(--gray-100);
+  color: var(--text-main);
+  background: var(--surface-1);
+  transition: background 0.14s;
+}
+/* 行 hover：极淡蓝底 */
+.el-table .el-table__body tr:hover > td.el-table__cell {
+  background: var(--brand-50);
+}
+/* 表头排序小箭头颜色统一 */
+.el-table .sort-caret.ascending,
+.el-table .sort-caret.descending {
+  border-bottom-color: var(--brand-500);
+  border-top-color: var(--brand-500);
+}
+
+/* 表格单元内的状态徽章（pill 胶囊） */
+.el-table .cell-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+.el-table .cell-badge .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.el-table .cell-badge.tone-success { background: var(--green-50); color: var(--green-700); }
+.el-table .cell-badge.tone-warning { background: var(--amber-50); color: var(--amber-700); }
+.el-table .cell-badge.tone-danger  { background: var(--red-50);   color: var(--red-700);   }
+.el-table .cell-badge.tone-primary { background: var(--brand-50); color: var(--brand-700); }
+.el-table .cell-badge.tone-info    { background: var(--gray-100); color: var(--gray-600);  }
+
+/* 学号 / ID / 时间戳等数字列：等宽 */
+.el-table .cell-mono {
+  font-variant-numeric: tabular-nums;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+/* 表内主标题（昵称 / 标题） */
+.el-table .cell-title {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* 分页 */
+.el-pagination .el-pager li.is-active {
+  background: var(--brand-600);
+  color: #fff;
+}
+
+/* 表格卡片外框 */
+.el-card.table-card,
+.el-card.filter-card {
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 登录页 */
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(1200px 560px at -10% -20%, rgba(22, 55, 96, 0.28), transparent),
+    radial-gradient(900px 420px at 110% 0%, rgba(61, 126, 187, 0.2), transparent),
+    linear-gradient(160deg, var(--brand-900) 0%, var(--brand-700) 55%, var(--brand-500) 100%);
+  padding: 24px;
+}
+
+.login-card {
+  width: 400px;
+  max-width: 100%;
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 60px rgba(22, 55, 96, 0.32);
+  padding: 36px 34px 30px;
+}
+
+.login-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 26px;
+}
+
+.login-head .logo-badge {
+  width: 58px;
+  height: 58px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--brand-600), var(--brand-800));
+  color: var(--accent-300);
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px oklch(70% 0.15 248 / 0.35), 0 8px 20px oklch(25% 0.09 262 / 0.3);
+}
+
+.login-head .logo-name {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--brand-700);
+  letter-spacing: 2px;
+}
+
+.login-head .logo-slogan {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+.login-tip {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-sub);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ---- 全局弹窗（中央悬浮）默认样式：所有中央对话框统一圆角 / 阴影 / 内边距 ---- */
+.el-dialog {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+}
+
+.el-dialog__header {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--line, #e9eef6);
+  background: var(--surface-1, #fbfcfe);
+  margin-right: 0;
+}
+
+.el-dialog__title {
+  font-family: var(--font-display, "Inter", system-ui, sans-serif);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-main, #10182a);
+}
+
+.el-dialog__headerbtn {
+  top: 14px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
+}
+
+.el-dialog__body {
+  padding: 18px 22px 20px;
+  color: var(--text-main, #10182a);
+}
+
+.el-dialog__footer {
+  padding: 12px 22px 16px;
+  border-top: 1px solid var(--line, #e9eef6);
+  background: var(--surface-1, #fbfcfe);
+}
+
+/* =========================================================================
+ * 暗黑模式（数据属性切换：[data-theme="dark"]）
+ * -------------------------------------------------------------------------
+ * 仅覆盖"语义变量"（--bg / --surface-* / --text-* / --line），保留品牌色
+ * （--brand-*）与语义色（--green-50 等）的相对关系，组件无需感知主题。
+ * 侧栏（--side-*）沿用原色（本身已是深色背景，无需改）。
+ * ========================================================================= */
+[data-theme='dark'] {
+  /* ---- 灰阶（暗色版） ---- */
+  --gray-25: #0f1623;
+  --gray-50: #131c2b;
+  --gray-100: #1a2233;
+  --gray-200: #243046;
+  --gray-300: #324156;
+  --gray-400: #5a6a82;
+  --gray-500: #7a8aa3;
+  --gray-600: #98aac4;
+  --gray-700: #b9c6dc;
+  --gray-800: #d8e1ee;
+  --gray-900: #eef2fa;
+
+  /* ---- 语义色（提亮以保证对比度） ---- */
+  --green-50: #0f2316;
+  --green-500: #5fb060;
+  --green-600: #4ea052;
+  --green-700: #7ec987;
+
+  --amber-50: #2a1d0a;
+  --amber-500: #f0a046;
+  --amber-700: #f5c480;
+
+  --red-50: #2a1614;
+  --red-500: #d9706c;
+  --red-700: #e89a96;
+
+  --blue-50: #11203a;
+  --blue-500: #5fa0d8;
+  --blue-700: #8bbbe8;
+
+  --teal-50: #0e2222;
+  --teal-500: #2dc6c0;
+  --teal-700: #5fd6d2;
+
+  --purple-50: #1d1830;
+  --purple-500: #9786c4;
+  --purple-700: #b3a4d8;
+
+  /* ---- 设计稿原始命名别名（暗色版） ---- */
+  --navy: #8bbbe8;
+  --navy-d: #5fa0d8;
+  --navy-l: #b8d2ec;
+  --line2: #1f2a3e;
+  --txt: #eef2fa;
+  --txt2: #b9c6dc;
+  --txt3: #98aac4;
+  --blue: #5fa0d8;
+  --red: #d9706c;
+
+  /* ---- 页面底色与表面（暗色 · 深蓝调，避开纯黑） ---- */
+  --bg: #0f1623;
+  --bg-soft: #131c2b;
+  --surface-1: #1a2233;
+  --surface-2: #243046;
+  --surface-3: #1f2a3e;
+  --text-main: #eef2fa;
+  --text-sub: #98aac4;
+  --text-mute: #7a8aa3;
+  --line: #243046;
+  --line-strong: #324156;
+  --brand-sub: #8bbbe8;
+  --brand-soft: rgba(143, 187, 232, 0.14);
+
+  /* 阴影在暗色背景上需更深以保持层次感 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 14px 38px rgba(0, 0, 0, 0.55);
+}
+
+/* Element Plus 暗黑模式兼容：覆盖部分硬编码背景/边线 */
+[data-theme='dark'] .el-card {
+  background: var(--surface-1) !important;
+  border-color: var(--line) !important;
+  color: var(--text-main) !important;
+}
+[data-theme='dark'] .el-card .el-card__header {
+  border-bottom-color: var(--line) !important;
+}
+[data-theme='dark'] .el-table {
+  --el-table-bg-color: var(--surface-1);
+  --el-table-tr-bg-color: var(--surface-1);
+  --el-table-header-bg-color: var(--surface-2);
+  --el-table-header-text-color: var(--text-main);
+  --el-table-row-hover-bg-color: var(--surface-2);
+  --el-table-current-row-bg-color: var(--surface-2);
+  --el-table-border-color: var(--line);
+  --el-table-text-color: var(--text-main);
+}
+[data-theme='dark'] .el-table th.el-table__cell {
+  background: var(--surface-2) !important;
+  color: var(--text-main) !important;
+  border-bottom-color: var(--line) !important;
+}
+[data-theme='dark'] .el-table td.el-table__cell {
+  background: var(--surface-1) !important;
+  color: var(--text-main) !important;
+  border-bottom-color: var(--line) !important;
+}
+[data-theme='dark'] .el-table .el-table__body tr:hover > td.el-table__cell {
+  background: var(--surface-2) !important;
+}
+[data-theme='dark'] .el-input__wrapper,
+[data-theme='dark'] .el-select__wrapper,
+[data-theme='dark'] .el-date-editor.el-input__wrapper,
+[data-theme='dark'] .el-textarea__inner {
+  background: var(--surface-2) !important;
+  box-shadow: 0 0 0 1px var(--line) inset !important;
+  color: var(--text-main) !important;
+}
+[data-theme='dark'] .el-input__inner,
+[data-theme='dark'] .el-textarea__inner {
+  color: var(--text-main) !important;
+}
+[data-theme='dark'] .el-input__inner::placeholder,
+[data-theme='dark'] .el-textarea__inner::placeholder {
+  color: var(--text-mute) !important;
+}
+[data-theme='dark'] .el-form-item__label {
+  color: var(--text-sub) !important;
+}
+[data-theme='dark'] .el-pagination {
+  color: var(--text-sub) !important;
+}
+[data-theme='dark'] .el-pagination .el-pager li {
+  background: var(--surface-2) !important;
+  color: var(--text-sub) !important;
+}
+[data-theme='dark'] .el-pagination .el-pager li.is-active {
+  background: var(--brand-500) !important;
+  color: #fff !important;
+}
+[data-theme='dark'] .el-dialog {
+  background: var(--surface-1) !important;
+}
+[data-theme='dark'] .el-dialog__header,
+[data-theme='dark'] .el-dialog__footer {
+  background: var(--surface-1) !important;
+  border-color: var(--line) !important;
+}
+[data-theme='dark'] .el-dialog__title {
+  color: var(--text-main) !important;
+}
+[data-theme='dark'] .el-drawer {
+  background: var(--bg) !important;
+}
+[data-theme='dark'] .el-drawer__header {
+  color: var(--text-main) !important;
+  border-bottom-color: var(--line) !important;
+}
+[data-theme='dark'] .el-empty__description p {
+  color: var(--text-sub) !important;
+}
+[data-theme='dark'] .el-alert--info.is-light {
+  background: rgba(143, 187, 232, 0.14) !important;
+  color: var(--brand-200) !important;
+}
+[data-theme='dark'] .el-alert--info .el-alert__title {
+  color: var(--brand-200) !important;
+}
+[data-theme='dark'] .el-alert__icon,
+[data-theme='dark'] .el-alert__content {
+  color: var(--brand-200) !important;
+}
+[data-theme='dark'] .el-overlay {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+[data-theme='dark'] .el-button.is-plain {
+  background: var(--surface-2) !important;
+  border-color: var(--line) !important;
+  color: var(--text-main) !important;
+}
+[data-theme='dark'] .el-tag {
+  border-color: var(--line) !important;
+}
+[data-theme='dark'] .el-checkbox,
+[data-theme='dark'] .el-radio {
+  color: var(--text-main) !important;
+}
+[data-theme='dark'] .el-checkbox__label,
+[data-theme='dark'] .el-radio__label {
+  color: var(--text-main) !important;
+}
+[data-theme='dark'] .el-popover.el-popper,
+[data-theme='dark'] .el-tooltip__popper {
+  background: var(--surface-2) !important;
+  border-color: var(--line) !important;
+  color: var(--text-main) !important;
+}
+[data-theme='dark'] .el-dropdown-menu {
+  background: var(--surface-2) !important;
+  border-color: var(--line) !important;
+}
+[data-theme='dark'] .el-dropdown-menu__item {
+  color: var(--text-main) !important;
+}
+[data-theme='dark'] .el-dropdown-menu__item:not(.is-disabled):hover {
+  background: var(--surface-3) !important;
+  color: var(--brand-200) !important;
+}
+[data-theme='dark'] .el-message-box {
+  background: var(--surface-1) !important;
+  border-color: var(--line) !important;
+}
+[data-theme='dark'] .el-message-box__title,
+[data-theme='dark'] .el-message-box__content,
+[data-theme='dark'] .el-message-box__message,
+[data-theme='dark'] .el-message-box__message p {
+  color: var(--text-main) !important;
+}
+[data-theme='dark'] .el-tabs__nav-wrap::after {
+  background-color: var(--line) !important;
+}
+[data-theme='dark'] .el-tabs__item {
+  color: var(--text-sub) !important;
+}
+[data-theme='dark'] .el-tabs__item.is-active,
+[data-theme='dark'] .el-tabs__item:hover {
+  color: var(--brand-200) !important;
+}
+[data-theme='dark'] .el-divider__text {
+  background: var(--surface-1) !important;
+  color: var(--text-sub) !important;
+}
+[data-theme='dark'] .el-descriptions__label,
+[data-theme='dark'] .el-descriptions__content {
+  color: var(--text-main) !important;
+  background-color: var(--surface-1) !important;
+}
+[data-theme='dark'] .el-descriptions__cell.el-descriptions__label.is-bordered-label {
+  background-color: var(--surface-2) !important;
+  color: var(--text-sub) !important;
+}

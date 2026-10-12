@@ -1,0 +1,235 @@
+/* 审核中心同款列表范式（三个运营页共用）：页头 / KPI / 工具栏 / 行列表 / 空态 */
+
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: var(--brand-sub);
+  margin-bottom: 8px;
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.page-sub {
+  color: var(--text-sub);
+  font-size: 13px;
+  margin: 8px 0 0;
+  max-width: 70ch;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--line);
+  background: var(--surface-1);
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.14s;
+}
+
+.chip:hover {
+  border-color: var(--brand-400);
+  color: var(--brand-600);
+}
+
+.chip.active {
+  background: var(--brand-600);
+  color: #fff;
+  border-color: var(--brand-600);
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.list-card {
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.list-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1.2fr 1.3fr 0.9fr 0.9fr 190px;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.12s;
+}
+
+.list-row:hover {
+  background: var(--surface-2);
+}
+
+.list-row.head {
+  background: var(--surface-2);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-sub);
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.list-row:last-child {
+  border-bottom: none;
+}
+
+.col-main {
+  min-width: 0;
+}
+
+.cell-title {
+  font-weight: 600;
+  color: var(--text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell-meta {
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-top: 3px;
+}
+
+.cell {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.cell-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+}
+
+.ml-8 {
+  margin-left: 8px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.act-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+}
+
+.act-link:hover {
+  background: var(--brand-50);
+}
+
+.act-approve {
+  color: var(--green-700);
+}
+.act-approve:hover {
+  background: var(--green-50);
+}
+
+.act-warn {
+  color: var(--amber-700);
+}
+.act-warn:hover {
+  background: var(--amber-50);
+}
+
+.act-reject {
+  color: var(--red-700);
+}
+.act-reject:hover {
+  background: var(--red-50);
+}
+
+.empty {
+  text-align: center;
+  padding: 64px 24px;
+}
+
+.empty .ico {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-full);
+  background: var(--brand-50);
+  display: grid;
+  place-items: center;
+  margin: 0 auto 16px;
+  font-size: 28px;
+}
+
+.empty h4 {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+
+.empty p {
+  margin: 0 0 20px;
+  color: var(--text-sub);
+  font-size: 13px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 16px;
+}
+
+@media (max-width: 1080px) {
+  .list-row {
+    grid-template-columns: 1.4fr 1fr 0.9fr 160px;
+  }
+  .list-row .col-hide,
+  .list-row.head .col-hide {
+    display: none;
+  }
+}

@@ -1,0 +1,307 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 700" preserveAspectRatio="xMidYMax slice">
+  <!-- 以福州软件职业技术学院长乐校区"城堡"主楼照片为原型的白天版（多动画版）：
+       蓝天白云 + 暖阳旋转光芒 + 热气球漂移 + 花瓣飘落 + 旗帜飘扬 + 玻璃幕墙光带扫过 + 树影随风 + 飞鸟扇翅 + 地面薄雾 -->
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#3d8fe6"/>
+      <stop offset=".55" stop-color="#8fd0f5"/>
+      <stop offset="1" stop-color="#eaf7ff"/>
+    </linearGradient>
+    <linearGradient id="wall" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#f4ebd8"/>
+      <stop offset="1" stop-color="#cdbfa2"/>
+    </linearGradient>
+    <linearGradient id="wallDark" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#ddd1b8"/>
+      <stop offset="1" stop-color="#ab9d82"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#a9d5f2"/>
+      <stop offset="1" stop-color="#6d9cc4"/>
+    </linearGradient>
+    <linearGradient id="towerGlass" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#37536f"/>
+      <stop offset="1" stop-color="#1e3550"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#fff7d9" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#fff7d9" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 光带渐变：用于玻璃幕墙反光扫过 -->
+    <linearGradient id="sweepGrad" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity=".6"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- 薄雾渐变 -->
+    <linearGradient id="mistGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".55" stop-color="#ffffff" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- 玻璃区域裁剪：光带只在幕墙范围内可见 -->
+    <clipPath id="wingClip">
+      <rect x="110" y="460" width="300" height="180"/>
+    </clipPath>
+    <clipPath id="coreClip">
+      <rect x="765" y="290" width="70" height="270"/>
+    </clipPath>
+
+    <style>
+      /* 窗户呼吸微闪 */
+      @keyframes fk{0%,100%{opacity:1}50%{opacity:.72}}
+      .w{animation:fk 4.5s ease-in-out infinite}
+      .d1{animation-delay:.7s}.d2{animation-delay:1.4s}.d3{animation-delay:2.1s}.d4{animation-delay:2.8s}
+
+      /* 城堡入场升起 */
+      @keyframes rise{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+      .castle{animation:rise 1.8s ease-out both}
+
+      /* 云朵漂移 */
+      @keyframes drift{from{transform:translateX(-70px)}to{transform:translateX(70px)}}
+      .cloud{animation:drift 32s ease-in-out infinite alternate}
+      .cloud-slow{animation-duration:46s;animation-direction:alternate-reverse}
+      .cloud-fast{animation-duration:24s}
+
+      /* 太阳光晕呼吸 */
+      @keyframes sun{0%,100%{opacity:.75}50%{opacity:1}}
+      .sun-halo{animation:sun 5s ease-in-out infinite}
+
+      /* 太阳光芒缓慢旋转 */
+      @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+      .rays{transform-box:view-box;transform-origin:1310px 118px;animation:spin 64s linear infinite}
+
+      /* 飞鸟：整体漂移 + 翅膀扇动 */
+      @keyframes fly{from{transform:translateX(0)}to{transform:translateX(60px)}}
+      .birds{animation:fly 26s ease-in-out infinite alternate}
+      @keyframes flap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.35)}}
+      .bird{transform-box:fill-box;transform-origin:center;animation:flap 1.15s ease-in-out infinite}
+      .b2{animation-duration:1.45s;animation-delay:.3s}
+      .b3{animation-duration:.95s;animation-delay:.6s}
+
+      /* 热气球：缓慢横向漂移 + 上下浮动 */
+      @keyframes floaty{0%{transform:translate(120px,140px)}50%{transform:translate(320px,104px)}100%{transform:translate(120px,140px)}}
+      .balloon{animation:floaty 54s ease-in-out infinite}
+
+      /* 旗帜飘扬：以旗杆为轴摆动 */
+      @keyframes wave{0%,100%{transform:skewY(0deg) scaleX(1)}20%{transform:skewY(-5deg) scaleX(.93)}55%{transform:skewY(4deg) scaleX(.96)}80%{transform:skewY(-2deg) scaleX(.98)}}
+      .flag{transform-box:fill-box;transform-origin:left center;animation:wave 2.8s ease-in-out infinite}
+      .flag-b{animation-duration:3.4s;animation-delay:.9s}
+      .flag-c{animation-duration:2.4s;animation-delay:1.7s}
+
+      /* 玻璃幕墙光带扫过 */
+      @keyframes sweep{0%{transform:translateX(-160px)}55%{transform:translateX(580px)}100%{transform:translateX(580px)}}
+      .sweep{animation:sweep 8.5s ease-in-out infinite}
+      .sweep2{animation:sweep 7s ease-in-out infinite;animation-delay:2.4s}
+
+      /* 树木随风摆动 */
+      @keyframes sway{0%,100%{transform:scaleX(1) rotate(0deg)}50%{transform:scaleX(1.06) rotate(-1.6deg)}}
+      .tree{transform-box:fill-box;transform-origin:center bottom;animation:sway 5.5s ease-in-out infinite}
+      .t2{animation-duration:6.9s;animation-delay:.9s}
+      .t3{animation-duration:4.8s;animation-delay:1.8s}
+
+      /* 花瓣飘落 */
+      @keyframes fall{0%{transform:translate(0,0) rotate(0deg);opacity:0}
+        12%{opacity:.9}
+        85%{opacity:.9}
+        100%{transform:translate(-150px,430px) rotate(320deg);opacity:0}}
+      .petal{transform-box:fill-box;transform-origin:center;animation:fall 16s linear infinite}
+      .p2{animation-duration:19s;animation-delay:-4s}
+      .p3{animation-duration:14s;animation-delay:-8s}
+      .p4{animation-duration:21s;animation-delay:-12s}
+      .p5{animation-duration:17s;animation-delay:-6s}
+
+      /* 地面薄雾流动 */
+      @keyframes mist{0%{transform:translateX(-90px)}100%{transform:translateX(90px)}}
+      .mist{animation:mist 38s ease-in-out infinite alternate}
+      .mist-b{animation-duration:52s;animation-direction:alternate-reverse}
+    </style>
+  </defs>
+
+  <!-- 白天天空 -->
+  <rect width="1600" height="700" fill="url(#sky)"/>
+
+  <!-- 太阳（旋转光芒 + 光晕呼吸） -->
+  <g class="rays" stroke="#fff3c2" stroke-width="4" stroke-linecap="round" opacity=".5">
+    <line x1="1370" y1="118" x2="1450" y2="118"/>
+    <line x1="1352" y1="160" x2="1409" y2="217"/>
+    <line x1="1310" y1="178" x2="1310" y2="258"/>
+    <line x1="1268" y1="160" x2="1211" y2="217"/>
+    <line x1="1250" y1="118" x2="1170" y2="118"/>
+    <line x1="1268" y1="76" x2="1211" y2="19"/>
+    <line x1="1310" y1="58" x2="1310" y2="-22"/>
+    <line x1="1352" y1="76" x2="1409" y2="19"/>
+  </g>
+  <circle class="sun-halo" cx="1310" cy="118" r="105" fill="url(#sunGlow)"/>
+  <circle cx="1310" cy="118" r="36" fill="#fff3c2"/>
+
+  <!-- 白云 -->
+  <g class="cloud" opacity=".92" fill="#ffffff">
+    <ellipse cx="320" cy="150" rx="190" ry="26"/>
+    <ellipse cx="450" cy="126" rx="120" ry="20"/>
+  </g>
+  <g class="cloud cloud-slow" opacity=".8" fill="#ffffff">
+    <ellipse cx="1080" cy="220" rx="210" ry="24"/>
+    <ellipse cx="950" cy="198" rx="120" ry="17"/>
+  </g>
+  <g class="cloud cloud-fast" opacity=".6" fill="#ffffff">
+    <ellipse cx="700" cy="90" rx="150" ry="18"/>
+  </g>
+
+  <!-- 热气球（缓慢漂移） -->
+  <g class="balloon">
+    <ellipse cx="0" cy="0" rx="24" ry="28" fill="#e8734a"/>
+    <path d="M-24 0 q24 -22 48 0" fill="#f2a06b"/>
+    <path d="M-7 24 L-7 34 M7 24 L7 34" stroke="#8a7f68" stroke-width="1.6"/>
+    <rect x="-10" y="34" width="20" height="11" rx="2.5" fill="#a8794a"/>
+  </g>
+
+  <!-- 飞鸟（扇翅 + 漂移） -->
+  <g class="birds" stroke="#3d5468" stroke-width="2.5" fill="none" stroke-linecap="round">
+    <path class="bird" d="M300 210 q7 -7 14 0 q7 -7 14 0"/>
+    <path class="bird b2" d="M372 182 q6 -6 12 0 q6 -6 12 0"/>
+    <path class="bird b3" d="M1180 268 q7 -7 14 0 q7 -7 14 0"/>
+  </g>
+
+  <!-- 飘落花瓣 -->
+  <g fill="#f7d5e0">
+    <ellipse class="petal" cx="240" cy="235" rx="5" ry="3.2"/>
+    <ellipse class="petal p2" cx="520" cy="170" rx="4.4" ry="2.8"/>
+    <ellipse class="petal p3" cx="960" cy="250" rx="5.2" ry="3.4"/>
+    <ellipse class="petal p4" cx="1420" cy="200" rx="4.6" ry="3"/>
+    <ellipse class="petal p5" cx="700" cy="300" rx="4.2" ry="2.6"/>
+  </g>
+
+  <!-- ============ 城堡主体（入场升起动画） ============ -->
+  <g class="castle">
+    <!-- 左半建筑（右侧镜像复用） -->
+    <g id="half">
+      <!-- 尽端塔楼 -->
+      <rect x="20" y="430" width="90" height="210" fill="url(#wall)"/>
+      <g fill="#f4ebd8">
+        <rect x="24" y="414" width="14" height="18"/><rect x="46" y="414" width="14" height="18"/>
+        <rect x="68" y="414" width="14" height="18"/><rect x="90" y="414" width="14" height="18"/>
+      </g>
+      <g fill="#4f7096">
+        <rect class="w" x="38" y="470" width="18" height="26"/><rect class="w d2" x="72" y="470" width="18" height="26"/>
+        <rect class="w d3" x="38" y="525" width="18" height="26"/><rect x="72" y="525" width="18" height="26" fill="#33506f"/>
+      </g>
+      <!-- 尽端塔楼小旗 -->
+      <line x1="65" y1="414" x2="65" y2="372" stroke="#8a7f68" stroke-width="2.5" stroke-linecap="round"/>
+      <path class="flag flag-b" d="M65 374 L104 382 L65 392 Z" fill="#4a86c8"/>
+
+      <!-- 左翼玻璃幕墙 -->
+      <rect x="110" y="460" width="300" height="180" fill="url(#glass)"/>
+      <rect x="110" y="452" width="300" height="8" fill="url(#wallDark)"/>
+      <g stroke="#4a7196" stroke-width="3">
+        <line x1="150" y1="460" x2="150" y2="640"/><line x1="190" y1="460" x2="190" y2="640"/>
+        <line x1="230" y1="460" x2="230" y2="640"/><line x1="270" y1="460" x2="270" y2="640"/>
+        <line x1="310" y1="460" x2="310" y2="640"/><line x1="350" y1="460" x2="350" y2="640"/>
+        <line x1="390" y1="460" x2="390" y2="640"/>
+        <line x1="110" y1="500" x2="410" y2="500"/><line x1="110" y1="540" x2="410" y2="540"/>
+        <line x1="110" y1="580" x2="410" y2="580"/>
+      </g>
+      <!-- 幕墙反光扫过 -->
+      <g clip-path="url(#wingClip)">
+        <g transform="rotate(-16 260 550)">
+          <rect class="sweep" x="0" y="430" width="66" height="240" fill="url(#sweepGrad)"/>
+        </g>
+      </g>
+      <g fill="#ffffff" opacity=".4">
+        <rect class="w d1" x="153" y="463" width="34" height="34"/><rect class="w d3" x="313" y="543" width="34" height="34"/>
+      </g>
+
+      <!-- 外副塔（带小尖顶） -->
+      <rect x="410" y="390" width="90" height="250" fill="url(#wall)"/>
+      <g fill="#f4ebd8">
+        <rect x="414" y="374" width="14" height="18"/><rect x="436" y="374" width="14" height="18"/>
+        <rect x="458" y="374" width="14" height="18"/><rect x="480" y="374" width="14" height="18"/>
+      </g>
+      <polygon points="455,328 438,374 472,374" fill="url(#wallDark)"/>
+      <circle cx="455" cy="324" r="4" fill="#e8b93c"/>
+      <!-- 尖顶小旗 -->
+      <line x1="455" y1="326" x2="455" y2="288" stroke="#8a7f68" stroke-width="2" stroke-linecap="round"/>
+      <path class="flag flag-c" d="M455 290 L490 297 L455 306 Z" fill="#e0b23a"/>
+      <g fill="#4f7096">
+        <rect class="w d1" x="428" y="430" width="20" height="28"/><rect x="464" y="430" width="20" height="28" fill="#33506f"/>
+        <rect class="w d4" x="428" y="485" width="20" height="28"/><rect class="w d2" x="464" y="485" width="20" height="28"/>
+        <rect class="w" x="428" y="540" width="20" height="28"/><rect class="w d3" x="464" y="540" width="20" height="28"/>
+      </g>
+
+      <!-- 内连接墙 -->
+      <rect x="500" y="470" width="80" height="170" fill="url(#wallDark)"/>
+      <g fill="#4f7096">
+        <rect class="w d3" x="514" y="490" width="18" height="26"/><rect x="548" y="490" width="18" height="26" fill="#33506f"/>
+        <rect class="w d1" x="514" y="540" width="18" height="26"/><rect class="w" x="548" y="540" width="18" height="26"/>
+      </g>
+
+      <!-- 内副塔 -->
+      <rect x="580" y="330" width="120" height="310" fill="url(#wall)"/>
+      <g fill="#f4ebd8">
+        <rect x="584" y="310" width="16" height="20"/><rect x="610" y="310" width="16" height="20"/>
+        <rect x="636" y="310" width="16" height="20"/><rect x="662" y="310" width="16" height="20"/>
+        <rect x="684" y="310" width="16" height="20"/>
+      </g>
+      <g fill="#4f7096">
+        <rect class="w" x="596" y="365" width="22" height="30"/><rect class="w d2" x="632" y="365" width="22" height="30"/><rect x="668" y="365" width="22" height="30" fill="#33506f"/>
+        <rect class="w d4" x="596" y="425" width="22" height="30"/><rect class="w d1" x="632" y="425" width="22" height="30"/><rect class="w d3" x="668" y="425" width="22" height="30"/>
+        <rect x="596" y="485" width="22" height="30" fill="#33506f"/><rect class="w d2" x="632" y="485" width="22" height="30"/><rect class="w" x="668" y="485" width="22" height="30"/>
+      </g>
+
+      <!-- 楼前绿树（随风摆动） -->
+      <ellipse class="tree" cx="230" cy="634" rx="48" ry="18" fill="#2f7048"/>
+      <ellipse class="tree t2" cx="540" cy="636" rx="40" ry="15" fill="#2a6641"/>
+      <ellipse class="tree t3" cx="70" cy="636" rx="36" ry="14" fill="#35794e"/>
+    </g>
+    <!-- 右半镜像 -->
+    <use href="#half" transform="translate(1600,0) scale(-1,1)"/>
+
+    <!-- 中央主塔（加宽加高，突出主体） -->
+    <g>
+      <rect x="700" y="260" width="200" height="380" fill="url(#wall)"/>
+      <g fill="#f4ebd8">
+        <rect x="704" y="238" width="18" height="22"/><rect x="736" y="238" width="18" height="22"/>
+        <rect x="768" y="238" width="18" height="22"/><rect x="800" y="238" width="18" height="22"/>
+        <rect x="832" y="238" width="18" height="22"/><rect x="864" y="238" width="18" height="22"/>
+      </g>
+      <!-- 主塔旗杆与旗帜 -->
+      <line x1="880" y1="246" x2="880" y2="168" stroke="#8a7f68" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="880" cy="165" r="3.2" fill="#e8b93c"/>
+      <path class="flag" d="M880 172 L934 182 L880 196 Z" fill="#d94f4f"/>
+
+      <g fill="#4f7096">
+        <rect class="w d1" x="716" y="340" width="20" height="30"/><rect class="w d3" x="864" y="340" width="20" height="30"/>
+        <rect class="w" x="716" y="405" width="20" height="30"/><rect x="864" y="405" width="20" height="30" fill="#33506f"/>
+        <rect class="w d2" x="716" y="470" width="20" height="30"/><rect class="w d4" x="864" y="470" width="20" height="30"/>
+      </g>
+      <!-- 中央深色玻璃竖塔（加宽） -->
+      <polygon points="800,252 765,292 835,292" fill="url(#towerGlass)"/>
+      <rect x="765" y="290" width="70" height="270" fill="url(#towerGlass)"/>
+      <g stroke="#4a6b8a" stroke-width="2">
+        <line x1="765" y1="320" x2="835" y2="320"/><line x1="765" y1="350" x2="835" y2="350"/>
+        <line x1="765" y1="380" x2="835" y2="380"/><line x1="765" y1="410" x2="835" y2="410"/>
+        <line x1="765" y1="440" x2="835" y2="440"/><line x1="765" y1="470" x2="835" y2="470"/>
+        <line x1="765" y1="500" x2="835" y2="500"/><line x1="765" y1="530" x2="835" y2="530"/>
+      </g>
+      <!-- 主塔玻璃光带扫过 -->
+      <g clip-path="url(#coreClip)">
+        <rect class="sweep2" x="735" y="300" width="26" height="250" fill="url(#sweepGrad)"/>
+      </g>
+      <rect x="790" y="330" width="20" height="18" fill="#bcd9ef" opacity=".85"/>
+      <!-- 尖拱大门（加宽） -->
+      <path d="M740 640 V556 Q800 476 860 556 V640 Z" fill="#241b12" stroke="#c9a54e" stroke-opacity=".5" stroke-width="2"/>
+      <rect x="792" y="576" width="16" height="64" fill="#8a6a2f"/>
+    </g>
+  </g>
+
+  <!-- 地面薄雾（缓慢流动） -->
+  <g class="mist" opacity=".55">
+    <ellipse cx="380" cy="628" rx="330" ry="26" fill="url(#mistGrad)"/>
+  </g>
+  <g class="mist mist-b" opacity=".45">
+    <ellipse cx="1180" cy="642" rx="360" ry="24" fill="url(#mistGrad)"/>
+  </g>
+
+  <!-- 广场（底边即与轮播图相接） -->
+  <rect x="0" y="640" width="1600" height="60" fill="#d9cdb4"/>
+</svg>

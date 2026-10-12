@@ -1,0 +1,41 @@
+
+本次会话修复的问题汇总：
+
+启动 / 环境（3 个）
+
+1. 后端无法启动 — 多模块依赖未 mvn install 到本地仓库
+2. MySQL 认证失败 — 改用 alumni / alumni_dev@0123 环境变量注入
+3. Flyway 校验失败 — V1 迁移 checksum 不匹配 + 缺 hero_slide / outstanding_alumni / wall_message 三表，已修复并补建
+文件上传 / 预览（4 个） 4. 上传"看似失败" — 后端单文件上传直接返回附件对象，前端却按批量 {success, failed} 结构解析，附件不入列表（ portal shared.tsx 、 admin BatchUploader.vue ）
+5. 附件预览 404 — admin 端 URL 拼成 /api/v1/api/v1/... 双重前缀（ AttachmentPreviewer.vue ）
+6. 门户"预览"401 — <a href> 裸链不带 Authorization，改为带 token 拉 blob 打开（ ProfileRecordsPage.tsx ）
+7. HTTP 环境无法登录 — crypto.subtle 仅在安全上下文可用，补了纯 JS SHA-256 降级（ client.ts 、 crypto.js ，已逐值比对验证）
+
+审核工作台（2 个，属功能缺口） 8. 审核详情空白 — 后端 GET /reviews/{id} 只返回审核记录，未嵌档案/附件数据；已富化（提交人 + 档案/荣誉 + 附件元数据），图片可见
+9. 审核日志错乱 — 前端读 log.reviewer/log.at 但后端返回 operator_id/created_at ；后端已输出完整流转链"校友提交数据 → 院系初审 → 校级复核"
+
+其他 10. 优秀校友 awards JSON 结构不符后端要求（须为 [{title,year,level}] 对象数组），种子数据已修正
+11. admin 布局侧栏/顶栏由浮动卡片改为吸附屏幕边缘（需求调整，非 bug）
+
+另产出： accounts.txt 4 级测试账号、留言墙/优秀校友种子数据、nginx 80 端口反代配置。
+
+================================================================
+追加修复（2026-09-21，编号续前）：
+
+门户 / 展示（2 个）
+12. 档案管理页缺"下架"按钮 — 后端档案列表/详情未返回 published 字段，前端无法条件渲染；ArchiveItem/ArchiveDetail DTO 补 published（关联 showcase）与 consent_active（查 consents）
+13. 门户 /profile 打开空白无报错 — Vite 依赖预打包缓存损坏致 react-dom 优化产物异常，删除 node_modules/.vite 并以 vite --force 重启恢复；main.tsx 保留顶层 ErrorBoundary 兜底
+
+权限（1 个）
+14. 留言墙审核点"通过"报无权限 — SecurityConfig 与 WallService.MANAGER_ROLES 仅放行 school_admin；两端补 system_admin 后 PUT /admin/wall/messages/{id}/review 返回 200
+
+列表排序（2 个）
+15. 荣誉列表 ID 列不可排序 — el-table-column 补 sortable 属性，点击表头切换升降序
+16. 管理列表数据旧记录在前 — 9 个管理列表页（档案/荣誉/审核/公告/优秀校友/留言墙/用户/字典/名录）统一改为按 ID 降序；首页轮播保持 display_order 不动
+
+P1 后端开发（5 个）
+17. Flyway 校验失败 — 已应用的 V1 被改导致 checksum 不匹配；P1 增量拆为独立 V2 迁移，已有迁移冻结不再修改
+18. 启动报 DuplicateMappingException — 跨模块同名实体（AlumniBase/User/AuditLog）冲突；统一加 @Entity(name="{module}{Class}") 区分
+19. 创建荣誉报 Data truncation — pending_counselor 长 17 字符超原 VARCHAR(16)；新增 V3 迁移把 archives/honors.status 加宽到 VARCHAR(24)，schema.sql 同步
+20. 导员账号创建失败 — users.alumni_base_id NOT NULL 外键约束；导员用 student_id="T"+手机号、grad_year=0 的 alumni_base 桩行满足约束
+21. app 打包夹带旧模块 jar — 本地仓库 counselors 模块未更新；改为 mvn clean install 全量构建后再打包 app

@@ -1,0 +1,79 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: alumni-platform
+  datasource:
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/alumni_platform?useUnicode=true&characterEncoding=UTF-8&connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    # app 专属迁移目录（合并 12 个模块脚本、全部幂等），与模块 jar 内 db/migration 物理隔离，
+    # 避免 Flyway 扫描全部 classpath 时撞上模块间同版本号（V1/V2/V3）迁移。
+    locations: classpath:db/platform
+    # 单库已由 schema.sql 建好结构（非空）：以 0 为基线，合并脚本幂等重放（CREATE IF NOT EXISTS / 存储过程判定）；
+    # 全新空库同路径建全结构。各模块历史表 flyway_history_{module} 为独立运行时代遗物，本应用不再使用。
+    table: flyway_schema_history
+    baseline-on-migrate: true
+    baseline-version: 0
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      timeout: 3s
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    serialization:
+      write-dates-as-timestamps: false
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 55MB
+
+app:
+  jwt:
+    # 与 auth 签发共用密钥；生产用 JWT_SECRET 环境变量统一覆盖
+    secret: ${JWT_SECRET:rN7vY2kQ9wE3tU8iO1pA5sD6fG0hJ4lKzXcVbNmQwE=}
+    access-expire-seconds: 7200      # access_token 2 小时
+  refresh-expire-seconds: 604800     # refresh_token 7 天
+  sms:
+    # mock 模式：验证码打印到日志，并在响应 dev_code 字段回显（仅供开发联调）
+    mock: true
+  dicts:
+    # grad_year 虚拟类型：不落库，按当前年动态生成（默认 当前年-20 ~ 当前年+4）
+    grad-year-from-offset: -20
+    grad-year-to-offset: 4
+  registration:
+    # 注册智能审核建议器（AI 审核预留）：mock=恒转人工（默认）；未来接 AI 审核数据库时改 ai
+    advisor: ${REGISTRATION_ADVISOR:mock}
+  teachers:
+    sync:
+      # 教师定时同步总开关：本地无内网接口默认关闭；手动同步（/admin/teachers/sync）不受此开关限制
+      enabled: ${TEACHER_SYNC_ENABLED:false}
+      # 定时同步频率（cron，默认每日 02:00）
+      cron: ${TEACHER_SYNC_CRON:0 0 2 * * *}
+      # 内网教师数据 REST 接口地址与访问令牌（Bearer，空则不带）
+      url: ${TEACHER_SYNC_URL:}
+      token: ${TEACHER_SYNC_TOKEN:}
+      connect-timeout: 5s
+      read-timeout: 30s
+      # mock=true：不访问内网，用内置假数据源（本地 E2E 用）；mock-file 指向 JSON 数组文件时实时读取
+      mock: ${TEACHER_SYNC_MOCK:false}
+      mock-file: ${TEACHER_SYNC_MOCK_FILE:}
+  storage:
+    # 附件存储根目录（./storage/{biz_type}/yyyy/MM/{uuid}.ext）
+    root: ${STORAGE_ROOT:./storage}
+    batch-limit: 5
+    # 孤儿附件（unreferenced）保留时长（小时），定时任务每小时清理一次
+    orphan-retention-hours: 24
+
+logging:
+  level:
+    com.alumni: info

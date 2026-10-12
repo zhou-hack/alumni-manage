@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>档案管理 · 校友管理平台</title>
+<style>
+  :root {
+    --ink: #111318; --ink-2: #5b6068; --ink-3: #9aa0a8;
+    --line: #e3e5e8; --paper: #ffffff; --accent: #c2410c; --err: #b42318; --ok: #157f3d;
+    --mono: "Cascadia Code", Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; color: var(--ink); background: var(--paper); line-height: 1.6; min-height: 100vh; }
+  [hidden] { display: none !important; }
+
+  .login-wrap { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 24px; }
+  .login-box { width: 100%; max-width: 360px; }
+  .brand { font-size: 28px; font-weight: 700; letter-spacing: 2px; }
+  .brand-sub { font-family: var(--mono); font-size: 12px; color: var(--ink-3); letter-spacing: 1px; margin: 6px 0 48px; }
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field input, .field select, .field textarea { width: 100%; padding: 11px 12px; font-size: 14px; border: none; border-bottom: 1px solid var(--ink); background: transparent; font-family: inherit; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-bottom: 2px solid var(--accent); }
+  .login-error { min-height: 22px; font-size: 13px; color: var(--err); margin: 4px 0 12px; }
+  .btn-primary { width: 100%; padding: 12px; font-size: 15px; font-weight: 600; background: var(--ink); color: #fff; border: none; cursor: pointer; }
+  .btn-primary:hover { background: #2a2e36; }
+  .btn-primary:active { transform: translateY(1px); }
+
+  .topbar { display: flex; align-items: center; gap: 20px; padding: 0 40px; height: 60px; border-bottom: 2px solid var(--ink); }
+  .topbar .title { font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+  .topbar .spacer { flex: 1; }
+  .topbar .who { font-size: 14px; color: var(--ink-2); }
+  .btn-ghost { padding: 7px 16px; font-size: 13px; font-weight: 600; cursor: pointer; background: #fff; border: 1px solid var(--ink); color: var(--ink); }
+  .btn-ghost:hover { background: #f3f4f6; }
+
+  .content { max-width: 1080px; margin: 0 auto; padding: 40px 40px 80px; }
+  nav.types { display: flex; gap: 28px; margin-bottom: 28px; border-bottom: 1px solid var(--line); }
+  nav.types button { background: none; border: none; cursor: pointer; font-size: 15px; font-weight: 600; color: var(--ink-2); padding: 10px 2px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  nav.types button.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .filter-bar { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-bar .field { margin-bottom: 0; }
+  .filter-bar label { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+  .filter-bar input, .filter-bar select { padding: 7px 10px; font-size: 13px; border: 1px solid var(--ink); background: #fff; font-family: inherit; }
+  .filter-bar input { width: 130px; }
+  .btn-add { padding: 9px 22px; font-size: 14px; font-weight: 600; background: var(--ink); color: #fff; border: none; cursor: pointer; }
+  .btn-add:hover { background: #2a2e36; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 12px; font-family: var(--mono); color: var(--ink-3); letter-spacing: 1px; padding: 8px 12px; border-bottom: 2px solid var(--ink); }
+  td { padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td.mono { font-family: var(--mono); font-size: 13px; }
+  td.ops { text-align: right; white-space: nowrap; }
+  td.ops button { background: none; border: none; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--ink-2); margin-left: 14px; }
+  td.ops button:hover { color: var(--accent); }
+  td.ops button.del:hover { color: var(--err); }
+
+  .badge { display: inline-block; font-size: 12px; font-family: var(--mono); padding: 1px 8px; border: 1px solid currentColor; }
+  .b-draft { color: var(--ink-3); } .b-pending_first, .b-pending_second { color: #b45309; }
+  .b-approved { color: var(--ok); } .b-rejected { color: var(--err); }
+  .b-deleting { color: #6d28d9; } .b-deleted { color: var(--ink-3); }
+  .reject-reason { font-size: 12px; color: var(--err); margin-top: 2px; }
+
+  .panel { border-top: 2px solid var(--ink); margin-top: 36px; padding-top: 20px; }
+  .panel h3 { font-size: 15px; font-weight: 700; letter-spacing: 1px; margin-bottom: 16px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
+  .form-grid .full { grid-column: 1 / -1; }
+  .msg { font-size: 13px; margin-top: 10px; min-height: 20px; }
+  .msg.err { color: var(--err); } .msg.ok { color: var(--ok); }
+  .hint { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+  .detail-box { font-size: 14px; }
+  .detail-box dt { font-size: 12px; font-family: var(--mono); color: var(--ink-3); letter-spacing: 1px; margin-top: 12px; }
+  .detail-box dd { margin-top: 2px; white-space: pre-wrap; }
+  .detail-box a { color: var(--accent); }
+  .pager { display: flex; gap: 16px; align-items: center; margin-top: 16px; font-size: 13px; font-family: var(--mono); }
+  .pager button { padding: 5px 14px; font-size: 12px; cursor: pointer; background: #fff; border: 1px solid var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="login-wrap" id="loginView">
+  <div class="login-box">
+    <div class="brand">档案管理</div>
+    <div class="brand-sub">ARCHIVES · 校友档案（student/alumni 提交 · 审核角色管理）</div>
+    <div class="field"><label>手机号</label><input id="phone" type="text" autocomplete="username"></div>
+    <div class="field"><label>密码</label><input id="password" type="password" autocomplete="current-password"></div>
+    <div class="login-error" id="loginError"></div>
+    <button class="btn-primary" onclick="doLogin()">登 录</button>
+  </div>
+</div>
+
+<div id="adminView" hidden>
+  <div class="topbar">
+    <span class="title">档案管理 · Archives</span>
+    <span class="spacer"></span>
+    <span class="who" id="whoName">—</span>
+    <button class="btn-ghost" onclick="logout()">退出登录</button>
+  </div>
+  <div class="content">
+    <nav class="types" id="tabs">
+      <button data-tab="my" class="active" onclick="switchTab('my')">我的档案</button>
+      <button data-tab="admin" id="tabAdmin" onclick="switchTab('admin')" hidden>管理端列表</button>
+    </nav>
+
+    <!-- 我的档案 -->
+    <section id="viewMy">
+      <table>
+        <thead><tr>
+          <th style="width:56px">ID</th><th>标题</th><th style="width:110px">分类</th>
+          <th style="width:130px">状态</th><th style="width:52px">版本</th><th style="width:150px">创建时间</th><th style="width:220px"></th>
+        </tr></thead>
+        <tbody id="myTbody"></tbody>
+      </table>
+      <div class="pager" id="myPager"></div>
+
+      <div class="panel">
+        <h3 id="formTitle">新建档案</h3>
+        <div class="form-grid">
+          <div class="field full"><label>标题 *</label><input id="fTitle" maxlength="128"></div>
+          <div class="field"><label>分类 *（snake_case）</label>
+            <select id="fCategory">
+              <option value="award">award · 获奖经历</option>
+              <option value="experience">experience · 工作/实践经历</option>
+              <option value="certificate">certificate · 证书</option>
+              <option value="story">story · 校友故事</option>
+            </select></div>
+          <div class="field"><label>附件 ID（多个用逗号分隔，须先在 8082 上传 biz_type=archive）</label><input id="fAttachments" placeholder="如 1,2,3"></div>
+          <div class="field full"><label>内容描述</label><textarea id="fContent" rows="3"></textarea></div>
+          <div class="field full"><label>备注</label><input id="fRemark" maxlength="255"></div>
+          <div class="field full"><label><input type="checkbox" id="fSubmit" style="width:auto;margin-right:6px">创建后立即提交审核（submit=true → pending_first）</label></div>
+        </div>
+        <button class="btn-add" id="fBtn" onclick="submitForm()">创建档案</button>
+        <button class="btn-ghost" id="fCancel" hidden onclick="resetForm()" style="margin-left:10px">取消编辑</button>
+        <div class="msg" id="formMsg"></div>
+      </div>
+
+      <div class="panel" id="detailPanel" hidden>
+        <h3>档案详情 <span id="dId" class="hint"></span></h3>
+        <dl class="detail-box" id="detailBox"></dl>
+      </div>
+    </section>
+
+    <!-- 管理端列表 -->
+    <section id="viewAdmin" hidden>
+      <div class="filter-bar">
+        <div class="field"><label>学号/姓名</label><input id="qKeyword"></div>
+        <div class="field"><label>学院 ID</label><input id="qCollege" type="number"></div>
+        <div class="field"><label>毕业年份</label><input id="qYear" type="number"></div>
+        <div class="field"><label>分类</label><input id="qCategory" placeholder="award…"></div>
+        <div class="field"><label>状态</label>
+          <select id="qStatus">
+            <option value="">全部</option>
+            <option>draft</option><option>pending_first</option><option>pending_second</option>
+            <option>approved</option><option>rejected</option><option>deleting</option><option>deleted</option>
+          </select></div>
+        <div class="field"><label>起始日期</label><input id="qFrom" type="date"></div>
+        <div class="field"><label>截止日期</label><input id="qTo" type="date"></div>
+        <button class="btn-add" onclick="loadAdmin(1)">筛 选</button>
+      </div>
+      <table>
+        <thead><tr>
+          <th style="width:56px">ID</th><th>标题</th><th style="width:100px">学号</th><th style="width:90px">姓名</th>
+          <th style="width:110px">学院</th><th style="width:64px">年份</th><th style="width:120px">状态</th><th style="width:140px">创建时间</th>
+        </tr></thead>
+        <tbody id="adminTbody"></tbody>
+      </table>
+      <div class="pager" id="adminPager"></div>
+      <div class="msg" id="adminMsg"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+const AUTH = 'http://localhost:8080/api/v1';
+const API = '/api/v1';
+let token = null, me = null, myPage = 1, adminPage = 1;
+
+async function sha256hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function api(base, path, options = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const res = await fetch(base + path, { ...options, headers });
+  const body = await res.json().catch(() => null);
+  return { status: res.status, body };
+}
+
+async function doLogin() {
+  const phone = document.getElementById('phone').value.trim();
+  const password = document.getElementById('password').value;
+  const errEl = document.getElementById('loginError');
+  errEl.textContent = '';
+  if (!phone || !password) { errEl.textContent = '请输入手机号和密码'; return; }
+  const hash = await sha256hex(password);
+  const { status, body } = await api(AUTH, '/auth/login', { method: 'POST', body: JSON.stringify({ phone, password: hash }) });
+  if (status !== 200 || !body || body.code !== 'OK') {
+    errEl.textContent = (body && body.message) || ('登录失败 HTTP ' + status); return;
+  }
+  token = body.data.access_token; me = body.data.user;
+  document.getElementById('whoName').textContent = me.nickname + ' · ' + me.role;
+  if (['college_admin', 'school_admin'].includes(me.role)) document.getElementById('tabAdmin').hidden = false;
+  document.getElementById('loginView').hidden = true;
+  document.getElementById('adminView').hidden = false;
+  loadMy(1);
+}
+
+function logout() { location.reload(); }
+
+function switchTab(tab) {
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.getElementById('viewMy').hidden = tab !== 'my';
+  document.getElementById('viewAdmin').hidden = tab !== 'admin';
+  if (tab === 'admin') loadAdmin(1);
+}
+
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function fmtTime(iso) { return iso ? iso.replace('T', ' ').slice(0, 19) + 'Z' : '—'; }
+
+// ---------- 我的档案 ----------
+async function loadMy(page) {
+  myPage = page;
+  const { status, body } = await api(API, `/archives/my?page=${page}&page_size=10`);
+  const tbody = document.getElementById('myTbody');
+  if (status !== 200 || body.code !== 'OK') { tbody.innerHTML = `<tr><td colspan="7">${esc(body?.message || '加载失败')}</td></tr>`; return; }
+  const rows = body.data.list.map(a => `
+    <tr>
+      <td class="mono">${a.id}</td>
+      <td>${esc(a.title)}${a.reject_reason && a.status === 'rejected' ? `<div class="reject-reason">驳回：${esc(a.reject_reason)}</div>` : ''}</td>
+      <td class="mono">${esc(a.category)}</td>
+      <td><span class="badge b-${a.status}">${a.status}</span></td>
+      <td class="mono">v${a.version}</td>
+      <td class="mono">${fmtTime(a.created_at)}</td>
+      <td class="ops">
+        <button onclick="showDetail(${a.id})">详情</button>
+        ${['draft', 'rejected'].includes(a.status) ? `<button onclick="fillEdit(${a.id})">编辑</button>` : ''}
+        ${a.status === 'rejected' ? `<button onclick="doResubmit(${a.id})">重提</button>` : ''}
+        ${!['deleting', 'deleted'].includes(a.status) ? `<button class="del" onclick="doDeleteRequest(${a.id})">删除申请</button>` : ''}
+      </td>
+    </tr>`).join('');
+  tbody.innerHTML = rows || '<tr><td colspan="7" style="color:var(--ink-3)">暂无档案，在下方创建</td></tr>';
+  renderPager('myPager', body.data, loadMy);
+}
+
+function renderPager(elId, data, loader) {
+  const pages = Math.max(1, Math.ceil(data.total / data.page_size));
+  document.getElementById(elId).innerHTML =
+    `<button ${data.page <= 1 ? 'disabled' : ''} onclick="(${loader.name})(${data.page - 1})">上一页</button>
+     <span>${data.page} / ${pages}（共 ${data.total} 条）</span>
+     <button ${data.page >= pages ? 'disabled' : ''} onclick="(${loader.name})(${data.page + 1})">下一页</button>`;
+}
+
+async function showDetail(id) {
+  const { status, body } = await api(API, `/archives/${id}`);
+  if (status !== 200 || body.code !== 'OK') { alert(body?.message || '加载失败'); return; }
+  const d = body.data;
+  document.getElementById('detailPanel').hidden = false;
+  document.getElementById('dId').textContent = '#' + d.id;
+  const atts = d.attachments.length
+    ? d.attachments.map(a => `<div><a href="http://localhost:8082/api/v1/attachments/${a.id}/preview" target="_blank">${esc(a.name)}</a> <span class="hint">${a.mime} · ${(a.size / 1024).toFixed(1)}KB</span></div>`).join('')
+    : '<span class="hint">无附件</span>';
+  document.getElementById('detailBox').innerHTML = `
+    <dt>标题</dt><dd>${esc(d.title)}</dd>
+    <dt>分类 / 状态 / 版本</dt><dd><span class="mono">${esc(d.category)}</span> · <span class="badge b-${d.status}">${d.status}</span> · v${d.version}</dd>
+    ${d.reject_reason ? `<dt>驳回原因</dt><dd style="color:var(--err)">${esc(d.reject_reason)}</dd>` : ''}
+    <dt>内容</dt><dd>${esc(d.content) || '—'}</dd>
+    <dt>备注</dt><dd>${esc(d.remark) || '—'}</dd>
+    <dt>附件</dt><dd>${atts}</dd>
+    <dt>创建 / 更新</dt><dd class="mono">${fmtTime(d.created_at)} / ${fmtTime(d.updated_at)}</dd>`;
+  document.getElementById('detailPanel').scrollIntoView({ behavior: 'smooth' });
+}
+
+let editingId = null;
+async function fillEdit(id) {
+  const { body } = await api(API, `/archives/${id}`);
+  if (body.code !== 'OK') { alert(body.message); return; }
+  const d = body.data;
+  editingId = id;
+  document.getElementById('formTitle').textContent = '编辑档案 #' + id;
+  document.getElementById('fTitle').value = d.title;
+  document.getElementById('fCategory').value = d.category;
+  document.getElementById('fContent').value = d.content || '';
+  document.getElementById('fRemark').value = d.remark || '';
+  document.getElementById('fAttachments').value = d.attachments.map(a => a.id).join(',');
+  document.getElementById('fSubmit').parentElement.parentElement.hidden = true;
+  document.getElementById('fBtn').textContent = '保存修改';
+  document.getElementById('fCancel').hidden = false;
+}
+
+function resetForm() {
+  editingId = null;
+  document.getElementById('formTitle').textContent = '新建档案';
+  ['fTitle', 'fContent', 'fRemark', 'fAttachments'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('fSubmit').checked = false;
+  document.getElementById('fSubmit').parentElement.parentElement.hidden = false;
+  document.getElementById('fBtn').textContent = '创建档案';
+  document.getElementById('fCancel').hidden = true;
+  document.getElementById('formMsg').textContent = '';
+}
+
+async function submitForm() {
+  const msg = document.getElementById('formMsg');
+  msg.className = 'msg'; msg.textContent = '';
+  const attRaw = document.getElementById('fAttachments').value.trim();
+  const attachment_ids = attRaw ? attRaw.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n)) : [];
+  const payload = {
+    title: document.getElementById('fTitle').value.trim(),
+    category: document.getElementById('fCategory').value,
+    content: document.getElementById('fContent').value,
+    remark: document.getElementById('fRemark').value,
+    attachment_ids
+  };
+  let r;
+  if (editingId) {
+    r = await api(API, `/archives/${editingId}`, { method: 'PATCH', body: JSON.stringify(payload) });
+  } else {
+    payload.submit = document.getElementById('fSubmit').checked;
+    r = await api(API, '/archives', { method: 'POST', body: JSON.stringify(payload) });
+  }
+  if ((r.status === 200 || r.status === 201) && r.body.code === 'OK') {
+    msg.className = 'msg ok'; msg.textContent = editingId ? '已保存' : (payload.submit ? '已创建并提交审核' : '草稿已保存');
+    resetForm(); loadMy(1);
+  } else {
+    msg.className = 'msg err'; msg.textContent = r.body?.message || ('失败 HTTP ' + r.status);
+  }
+}
+
+async function doResubmit(id) {
+  if (!confirm('确认重新提交审核？version 将 +1')) return;
+  const r = await api(API, `/archives/${id}/resubmit`, { method: 'POST', body: '{}' });
+  if (r.body?.code !== 'OK') alert(r.body?.message || '操作失败');
+  loadMy(myPage);
+}
+
+async function doDeleteRequest(id) {
+  if (!confirm('发起删除审核申请？档案将进入 deleting 状态，审核通过后才真正删除')) return;
+  const r = await api(API, `/archives/${id}/delete-request`, { method: 'POST', body: '{}' });
+  if (r.body?.code !== 'OK') alert(r.body?.message || '操作失败');
+  loadMy(myPage);
+}
+
+// ---------- 管理端 ----------
+async function loadAdmin(page) {
+  adminPage = page;
+  const p = new URLSearchParams({ page, page_size: 10 });
+  const kv = { keyword: 'qKeyword', college_id: 'qCollege', grad_year: 'qYear', category: 'qCategory', status: 'qStatus', date_from: 'qFrom', date_to: 'qTo' };
+  for (const [k, id] of Object.entries(kv)) { const v = document.getElementById(id).value.trim(); if (v) p.set(k, v); }
+  const { status, body } = await api(API, '/archives?' + p);
+  const msg = document.getElementById('adminMsg');
+  const tbody = document.getElementById('adminTbody');
+  msg.textContent = '';
+  if (status !== 200 || body.code !== 'OK') { msg.className = 'msg err'; msg.textContent = body?.message || ('加载失败 HTTP ' + status); tbody.innerHTML = ''; return; }
+  tbody.innerHTML = body.data.list.map(a => `
+    <tr>
+      <td class="mono">${a.id}</td><td>${esc(a.title)}</td><td class="mono">${esc(a.student_id)}</td>
+      <td>${esc(a.real_name)}</td><td>${esc(a.college) || '—'}</td><td class="mono">${a.grad_year ?? '—'}</td>
+      <td><span class="badge b-${a.status}">${a.status}</span></td><td class="mono">${fmtTime(a.created_at)}</td>
+    </tr>`).join('') || '<tr><td colspan="8" style="color:var(--ink-3)">无匹配记录</td></tr>';
+  renderPager('adminPager', body.data, loadAdmin);
+}
+</script>
+</body>
+</html>

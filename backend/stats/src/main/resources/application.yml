@@ -1,0 +1,35 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: alumni-stats
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/alumni_platform?useUnicode=true&characterEncoding=UTF-8&connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  jackson:
+    # 全模块字段统一 snake_case 出/入参
+    property-naming-strategy: SNAKE_CASE
+    serialization:
+      # Instant 等业务时间字段按 ISO 8601 UTC 输出
+      write-dates-as-timestamps: false
+
+app:
+  jwt:
+    # 开发默认密钥（HS256, base64 32 字节），生产环境必须用 JWT_SECRET 环境变量覆盖
+    secret: ${JWT_SECRET:rN7vY2kQ9wE3tU8iO1pA5sD6fG0hJ4lKzXcVbNmQwE=}
+    access-expire-seconds: 7200      # access_token 2 小时
+
+logging:
+  level:
+    com.alumni.stats: info

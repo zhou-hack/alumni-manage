@@ -1,0 +1,11 @@
+.idea/
+backend.iml
+
+# 编译产物（所有模块统一忽略）
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# 运行时上传文件（附件/导入 CSV 本地落盘，勿提交）
+app/storage/

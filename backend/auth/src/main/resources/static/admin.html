@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理后台 · 校友管理平台</title>
+<style>
+  :root {
+    --ink: #111318;
+    --ink-2: #5b6068;
+    --ink-3: #9aa0a8;
+    --line: #e3e5e8;
+    --paper: #ffffff;
+    --accent: #c2410c;
+    --err: #b42318;
+    --mono: "Cascadia Code", Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+    color: var(--ink); background: var(--paper); line-height: 1.6;
+    min-height: 100vh;
+  }
+  [hidden] { display: none !important; }
+
+  /* ---------- 登录 ---------- */
+  .login-wrap {
+    min-height: 100vh; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; padding: 40px 24px;
+  }
+  .login-box { width: 100%; max-width: 360px; }
+  .brand { font-size: 28px; font-weight: 700; letter-spacing: 2px; }
+  .brand-sub {
+    font-family: var(--mono); font-size: 12px; color: var(--ink-3);
+    letter-spacing: 1px; margin: 6px 0 48px;
+  }
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field input {
+    width: 100%; padding: 11px 12px; font-size: 14px;
+    border: none; border-bottom: 1px solid var(--ink); border-radius: 0;
+    background: transparent; font-family: inherit;
+  }
+  .field input:focus { outline: none; border-bottom: 2px solid var(--accent); }
+  .login-error {
+    min-height: 22px; font-size: 13px; color: var(--err); margin: 4px 0 12px;
+  }
+  .btn-primary {
+    width: 100%; padding: 12px; font-size: 15px; font-weight: 600;
+    background: var(--ink); color: #fff; border: none; cursor: pointer;
+  }
+  .btn-primary:hover { background: #2a2e36; }
+  .btn-primary:active { transform: translateY(1px); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* ---------- 后台框架 ---------- */
+  .topbar {
+    display: flex; align-items: center; gap: 20px;
+    padding: 0 40px; height: 60px; border-bottom: 2px solid var(--ink);
+  }
+  .topbar .title { font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+  .topbar .spacer { flex: 1; }
+  .topbar .who { font-size: 14px; color: var(--ink-2); }
+  .role-tag {
+    display: inline-block; font-size: 12px; font-weight: 600;
+    padding: 2px 10px; background: var(--ink); color: #fff; letter-spacing: 1px;
+  }
+  .btn-ghost {
+    padding: 7px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+    background: #fff; border: 1px solid var(--ink); color: var(--ink);
+  }
+  .btn-ghost:hover { background: #f3f4f6; }
+  .btn-ghost:active { transform: translateY(1px); }
+
+  .content { max-width: 880px; margin: 0 auto; padding: 48px 40px 80px; }
+  .sec { margin-bottom: 56px; }
+  .sec-label {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    color: var(--accent); letter-spacing: 2px; margin-bottom: 20px;
+  }
+  .sec h2 { font-size: 22px; font-weight: 700; margin-bottom: 24px; }
+
+  .rows { }
+  .row-item {
+    display: flex; align-items: baseline; padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .row-item .k { width: 160px; font-size: 13px; color: var(--ink-2); flex-shrink: 0; }
+  .row-item .v { font-size: 15px; font-weight: 600; word-break: break-all; }
+  .row-item .v.mono { font-family: var(--mono); font-size: 13px; font-weight: 400; }
+
+  .session-line { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .countdown { font-family: var(--mono); font-size: 24px; font-weight: 700; }
+  .countdown.warn { color: var(--err); }
+  .hint { font-size: 13px; color: var(--ink-3); margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<!-- ========== 登录视图 ========== -->
+<div class="login-wrap" id="loginView">
+  <div class="login-box">
+    <div class="brand">校友管理平台</div>
+    <div class="brand-sub">ADMIN CONSOLE · 管理后台</div>
+    <div class="field">
+      <label for="phone">手机号</label>
+      <input id="phone" type="text" autocomplete="username" placeholder="请输入登录手机号">
+    </div>
+    <div class="field">
+      <label for="password">密码</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="请输入密码">
+    </div>
+    <div class="login-error" id="loginError"></div>
+    <button class="btn-primary" id="loginBtn" onclick="doLogin()">登 录</button>
+  </div>
+</div>
+
+<!-- ========== 后台视图 ========== -->
+<div id="adminView" hidden>
+  <div class="topbar">
+    <span class="title">校友管理平台 · 管理后台</span>
+    <span class="spacer"></span>
+    <span class="who" id="whoName">—</span>
+    <span class="role-tag" id="whoRole">—</span>
+    <button class="btn-ghost" onclick="doLogout()">退出登录</button>
+  </div>
+
+  <div class="content">
+    <section class="sec">
+      <div class="sec-label">ACCOUNT</div>
+      <h2>账户信息</h2>
+      <div class="rows">
+        <div class="row-item"><span class="k">昵称</span><span class="v" id="fNick">—</span></div>
+        <div class="row-item"><span class="k">角色</span><span class="v" id="fRole">—</span></div>
+        <div class="row-item"><span class="k">学号 / 工号</span><span class="v mono" id="fSid">—</span></div>
+        <div class="row-item"><span class="k">手机号</span><span class="v mono" id="fPhone">—</span></div>
+        <div class="row-item"><span class="k">对接 UUID</span><span class="v mono" id="fUuid">—</span></div>
+        <div class="row-item"><span class="k">账号 ID</span><span class="v mono" id="fId">—</span></div>
+        <div class="row-item"><span class="k">激活时间（UTC）</span><span class="v mono" id="fCreated">—</span></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-label">SESSION</div>
+      <h2>会话状态</h2>
+      <div class="session-line">
+        <span class="countdown" id="countdown">--:--</span>
+        <button class="btn-ghost" onclick="doRefresh()">刷新会话</button>
+      </div>
+      <p class="hint">access_token 有效期 2 小时；到期前可点击「刷新会话」静默续期（refresh_token 7 天，轮换制）。所有接口请求与响应日志均打印在浏览器 Console（F12）。</p>
+    </section>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const ROLE_NAMES = {
+  student: '学生', alumni: '校友', counselor: '导员',
+  college_admin: '院系管理员', school_admin: '学校管理员', system_admin: '系统管理员'
+};
+
+// ---------- 日志：全部接口交互打印到 Console ----------
+function logApi(method, path, status, body) {
+  const ok = status >= 200 && status < 300;
+  const style = ok ? 'color:#157f3d' : 'color:#b42318';
+  console.groupCollapsed(`%c[AUTH] ${method} ${path} → ${status}`, style);
+  console.log(body);
+  console.groupEnd();
+}
+
+// ---------- 基础 ----------
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function api(path, { method = 'GET', body, bearer, silent401 } = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (bearer) headers['Authorization'] = 'Bearer ' + bearer;
+  const res = await fetch('/api/v1/auth' + path, {
+    method, headers, body: body ? JSON.stringify(body) : undefined
+  });
+  const json = await res.json().catch(() => ({ message: '非 JSON 响应' }));
+  logApi(method, path, res.status, json);
+  return { status: res.status, json };
+}
+
+// ---------- 会话存取 ----------
+function saveSession(data) {
+  localStorage.setItem('access_token', data.access_token);
+  localStorage.setItem('refresh_token', data.refresh_token);
+  localStorage.setItem('token_issued_at', String(Date.now()));
+  localStorage.setItem('token_expires_in', String(data.expires_in));
+}
+function clearSession() {
+  ['access_token', 'refresh_token', 'token_issued_at', 'token_expires_in']
+    .forEach(k => localStorage.removeItem(k));
+}
+
+// ---------- 视图切换 ----------
+function showLogin(msg) {
+  $('adminView').hidden = true;
+  $('loginView').hidden = false;
+  $('loginError').textContent = msg || '';
+  $('password').value = '';
+}
+function showAdmin(user) {
+  $('loginView').hidden = true;
+  $('adminView').hidden = false;
+  $('whoName').textContent = user.nickname;
+  $('whoRole').textContent = ROLE_NAMES[user.role] || user.role;
+  $('fNick').textContent = user.nickname;
+  $('fRole').textContent = ROLE_NAMES[user.role] || user.role;
+  $('fSid').textContent = user.student_id;
+  $('fPhone').textContent = user.phone;
+  $('fUuid').textContent = user.uuid || '—';
+  $('fId').textContent = user.id;
+  $('fCreated').textContent = user.created_at;
+  startCountdown();
+}
+
+// ---------- 登录 ----------
+async function doLogin() {
+  const phone = $('phone').value.trim();
+  const raw = $('password').value;
+  if (!phone || !raw) { $('loginError').textContent = '请输入手机号和密码'; return; }
+  $('loginBtn').disabled = true;
+  try {
+    const { status, json } = await api('/login', {
+      method: 'POST',
+      body: { phone, password: await sha256Hex(raw) }
+    });
+    if (status === 200) {
+      saveSession(json.data);
+      showAdmin(json.data.user);
+    } else {
+      $('loginError').textContent = json.message || '登录失败';
+    }
+  } catch (e) {
+    $('loginError').textContent = '网络异常，请稍后重试';
+  } finally {
+    $('loginBtn').disabled = false;
+  }
+}
+$('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// ---------- 会话操作 ----------
+async function doRefresh() {
+  const rt = localStorage.getItem('refresh_token');
+  if (!rt) return false;
+  const { status, json } = await api('/refresh', { method: 'POST', body: { refresh_token: rt } });
+  if (status === 200) {
+    saveSession(json.data);
+    startCountdown();
+    return true;
+  }
+  return false;
+}
+
+async function doLogout() {
+  const at = localStorage.getItem('access_token');
+  if (at) await api('/logout', { method: 'POST', bearer: at });
+  clearSession();
+  showLogin('已退出登录');
+}
+
+// ---------- 倒计时 ----------
+let timer = null;
+function startCountdown() {
+  clearInterval(timer);
+  const tick = () => {
+    const issued = Number(localStorage.getItem('token_issued_at') || 0);
+    const exp = Number(localStorage.getItem('token_expires_in') || 0);
+    const left = Math.max(0, Math.floor(exp - (Date.now() - issued) / 1000));
+    const mm = String(Math.floor(left / 60)).padStart(2, '0');
+    const ss = String(left % 60).padStart(2, '0');
+    $('countdown').textContent = `${mm}:${ss}`;
+    $('countdown').classList.toggle('warn', left < 300);
+  };
+  tick();
+  timer = setInterval(tick, 1000);
+}
+
+// ---------- 启动：尝试恢复会话 ----------
+(async function init() {
+  const at = localStorage.getItem('access_token');
+  if (!at) return showLogin();
+  let { status, json } = await api('/me', { bearer: at });
+  if (status === 401 && await doRefresh()) {
+    ({ status, json } = await api('/me', { bearer: localStorage.getItem('access_token') }));
+  }
+  if (status === 200) {
+    showAdmin(json.data);
+  } else {
+    clearSession();
+    showLogin('会话已过期，请重新登录');
+  }
+})();
+</script>
+</body>
+</html>

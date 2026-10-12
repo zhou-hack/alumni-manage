@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字典管理 · 校友管理平台</title>
+<style>
+  :root {
+    --ink: #111318; --ink-2: #5b6068; --ink-3: #9aa0a8;
+    --line: #e3e5e8; --paper: #ffffff; --accent: #c2410c; --err: #b42318;
+    --mono: "Cascadia Code", Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; color: var(--ink); background: var(--paper); line-height: 1.6; min-height: 100vh; }
+  [hidden] { display: none !important; }
+
+  .login-wrap { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 24px; }
+  .login-box { width: 100%; max-width: 360px; }
+  .brand { font-size: 28px; font-weight: 700; letter-spacing: 2px; }
+  .brand-sub { font-family: var(--mono); font-size: 12px; color: var(--ink-3); letter-spacing: 1px; margin: 6px 0 48px; }
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field input, .field select { width: 100%; padding: 11px 12px; font-size: 14px; border: none; border-bottom: 1px solid var(--ink); background: transparent; font-family: inherit; }
+  .field input:focus, .field select:focus { outline: none; border-bottom: 2px solid var(--accent); }
+  .login-error { min-height: 22px; font-size: 13px; color: var(--err); margin: 4px 0 12px; }
+  .btn-primary { width: 100%; padding: 12px; font-size: 15px; font-weight: 600; background: var(--ink); color: #fff; border: none; cursor: pointer; }
+  .btn-primary:hover { background: #2a2e36; }
+  .btn-primary:active { transform: translateY(1px); }
+
+  .topbar { display: flex; align-items: center; gap: 20px; padding: 0 40px; height: 60px; border-bottom: 2px solid var(--ink); }
+  .topbar .title { font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+  .topbar .spacer { flex: 1; }
+  .topbar .who { font-size: 14px; color: var(--ink-2); }
+  .btn-ghost { padding: 7px 16px; font-size: 13px; font-weight: 600; cursor: pointer; background: #fff; border: 1px solid var(--ink); color: var(--ink); }
+  .btn-ghost:hover { background: #f3f4f6; }
+
+  .content { max-width: 960px; margin: 0 auto; padding: 40px 40px 80px; }
+  nav.types { display: flex; gap: 28px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }
+  nav.types button { background: none; border: none; cursor: pointer; font-size: 15px; font-weight: 600; color: var(--ink-2); padding: 10px 2px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  nav.types button.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .filter-bar label { font-size: 13px; font-weight: 600; }
+  .filter-bar select { padding: 8px 12px; font-size: 14px; border: 1px solid var(--ink); background: #fff; font-family: inherit; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 12px; font-family: var(--mono); color: var(--ink-3); letter-spacing: 1px; padding: 8px 12px; border-bottom: 2px solid var(--ink); }
+  td { padding: 11px 12px; border-bottom: 1px solid var(--line); }
+  td.mono { font-family: var(--mono); font-size: 13px; }
+  td.ops { text-align: right; white-space: nowrap; }
+  td.ops button { background: none; border: none; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--ink-2); margin-left: 16px; }
+  td.ops button:hover { color: var(--accent); }
+  td.ops button.del:hover { color: var(--err); }
+  td input, td select { width: 100%; padding: 5px 8px; font-size: 13px; border: 1px solid var(--ink-3); font-family: inherit; background: #fff; }
+  td input.num { width: 64px; }
+  .parent-name { font-size: 12px; color: var(--ink-2); }
+
+  .add-bar { display: flex; gap: 12px; align-items: flex-end; margin: 28px 0 8px; flex-wrap: wrap; }
+  .add-bar .field { margin-bottom: 0; }
+  .add-bar .field input, .add-bar .field select { border: 1px solid var(--ink); padding: 8px 12px; }
+  .btn-add { padding: 9px 22px; font-size: 14px; font-weight: 600; background: var(--ink); color: #fff; border: none; cursor: pointer; }
+  .btn-add:hover { background: #2a2e36; }
+  .msg { font-size: 13px; margin-top: 10px; min-height: 20px; }
+  .msg.err { color: var(--err); }
+  .msg.ok { color: #157f3d; }
+  .hint { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="login-wrap" id="loginView">
+  <div class="login-box">
+    <div class="brand">字典管理</div>
+    <div class="brand-sub">DICTS ADMIN · 基础字典（写操作需 school_admin）</div>
+    <div class="field"><label>手机号</label><input id="phone" type="text" autocomplete="username"></div>
+    <div class="field"><label>密码</label><input id="password" type="password" autocomplete="current-password"></div>
+    <div class="login-error" id="loginError"></div>
+    <button class="btn-primary" onclick="doLogin()">登 录</button>
+  </div>
+</div>
+
+<div id="adminView" hidden>
+  <div class="topbar">
+    <span class="title">字典管理 · Dicts</span>
+    <span class="spacer"></span>
+    <span class="who" id="whoName">—</span>
+    <button class="btn-ghost" onclick="logout()">退出登录</button>
+  </div>
+  <div class="content">
+    <nav class="types" id="typeTabs"></nav>
+    <div class="filter-bar" id="filterBar" hidden>
+      <label>所属学院</label>
+      <select id="collegeFilter" onchange="loadItems()"><option value="">全部学院</option></select>
+    </div>
+    <table>
+      <thead id="thead"></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="add-bar" id="addBar">
+      <div class="field" id="aParentWrap" hidden><label>归属学院（必选）</label><select id="aParent" style="width:180px"></select></div>
+      <div class="field"><label>label（展示文本）</label><input id="aLabel" style="width:200px"></div>
+      <div class="field"><label>value（存储值）</label><input id="aValue" style="width:160px"></div>
+      <div class="field"><label>sort</label><input id="aSort" type="number" value="0" style="width:72px"></div>
+      <button class="btn-add" onclick="doCreate()">新增字典项</button>
+    </div>
+    <div class="msg" id="msg"></div>
+    <p class="hint">专业（major）归属学院（college）之下；grad_year 为系统维护类型（按当前年动态生成，只读）；存在子级或被业务引用的字典项禁止删除/改值（409）。接口日志见浏览器 Console（F12）。</p>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const AUTH_BASE = 'http://127.0.0.1:8080/api/v1/auth';
+const API_BASE = '/api/v1/dicts';
+const TYPES = [
+  { key: 'college', name: '学院' },
+  { key: 'major', name: '专业' },
+  { key: 'grad_year', name: '毕业年份' },
+  { key: 'honor_category', name: '荣誉类别' }
+];
+let currentType = 'college';
+let items = [];
+let colleges = null;   // 学院缓存（major 级联用）
+let editingId = null;
+
+function logApi(method, path, status, body) {
+  const ok = status >= 200 && status < 300;
+  console.groupCollapsed(`%c[DICTS] ${method} ${path} → ${status}`, ok ? 'color:#157f3d' : 'color:#b42318');
+  console.log(body); console.groupEnd();
+}
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function api(base, path, { method = 'GET', body } = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  const at = localStorage.getItem('access_token');
+  if (at) headers['Authorization'] = 'Bearer ' + at;
+  const res = await fetch(base + path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+  const json = await res.json().catch(() => ({ message: '非 JSON 响应' }));
+  logApi(method, path, res.status, json);
+  return { status: res.status, json };
+}
+function showMsg(text, ok) { const m = $('msg'); m.textContent = text || ''; m.className = 'msg ' + (ok ? 'ok' : 'err'); }
+
+async function doLogin() {
+  const phone = $('phone').value.trim(), raw = $('password').value;
+  if (!phone || !raw) { $('loginError').textContent = '请输入手机号和密码'; return; }
+  const { status, json } = await api(AUTH_BASE, '/login', { method: 'POST', body: { phone, password: await sha256Hex(raw) } });
+  if (status === 200) {
+    localStorage.setItem('access_token', json.data.access_token);
+    localStorage.setItem('refresh_token', json.data.refresh_token);
+    localStorage.setItem('user', JSON.stringify(json.data.user));
+    enter();
+  } else {
+    $('loginError').textContent = json.message || '登录失败';
+  }
+}
+$('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function logout() {
+  ['access_token', 'refresh_token', 'user'].forEach(k => localStorage.removeItem(k));
+  $('adminView').hidden = true; $('loginView').hidden = false;
+}
+
+function enter() {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  $('whoName').textContent = `${user.nickname || ''} · ${user.role || ''}`;
+  $('loginView').hidden = true; $('adminView').hidden = false;
+  $('addBar').style.display = user.role === 'school_admin' ? '' : 'none';
+  renderTabs(); loadItems();
+}
+
+function renderTabs() {
+  $('typeTabs').innerHTML = '';
+  TYPES.forEach(t => {
+    const b = document.createElement('button');
+    b.textContent = `${t.name} ${t.key}`;
+    b.className = t.key === currentType ? 'active' : '';
+    b.onclick = () => { currentType = t.key; editingId = null; renderTabs(); loadItems(); };
+    $('typeTabs').appendChild(b);
+  });
+}
+
+async function ensureColleges() {
+  if (colleges) return;
+  const { status, json } = await api(API_BASE, '/college');
+  colleges = status === 200 ? json.data : [];
+}
+function collegeName(id) {
+  const c = (colleges || []).find(x => x.id === id);
+  return c ? c.label : (id ? '#' + id : '—');
+}
+
+async function loadItems() {
+  const isMajor = currentType === 'major';
+  $('filterBar').hidden = !isMajor;
+  $('aParentWrap').hidden = !isMajor;
+  if (isMajor) {
+    await ensureColleges();
+    $('collegeFilter').innerHTML = '<option value="">全部学院</option>'
+      + colleges.map(c => `<option value="${c.id}">${escapeHtml(c.label)}</option>`).join('');
+    $('aParent').innerHTML = colleges.map(c => `<option value="${c.id}">${escapeHtml(c.label)}</option>`).join('');
+  }
+  const pid = isMajor && $('collegeFilter').value ? '?parent_id=' + $('collegeFilter').value : '';
+  const { status, json } = await api(API_BASE, '/' + currentType + pid);
+  if (status === 200) { items = json.data; renderTable(); showMsg(''); }
+  else if (status === 401) logout();
+  else showMsg(json.message || '加载失败');
+}
+
+function renderTable() {
+  const isMajor = currentType === 'major';
+  const isVirtual = currentType === 'grad_year';   // 系统维护类型：只读
+  const isAdmin = (JSON.parse(localStorage.getItem('user') || '{}').role === 'school_admin');
+  const showOps = isAdmin && !isVirtual;
+  $('addBar').style.display = showOps ? '' : 'none';
+  $('thead').innerHTML = `<tr><th style="width:70px">ID</th>${isMajor ? '<th>所属学院</th>' : ''}<th>LABEL</th><th>VALUE</th><th style="width:90px">SORT</th><th style="width:120px"></th></tr>`;
+  $('tbody').innerHTML = items.map(it => {
+    if (it.id === editingId) {
+      const parentCell = isMajor
+        ? `<td><select id="eParent">${colleges.map(c => `<option value="${c.id}" ${c.id === it.parent_id ? 'selected' : ''}>${escapeHtml(c.label)}</option>`).join('')}</select></td>`
+        : '';
+      return `<tr>
+        <td class="mono">${it.id}</td>${parentCell}
+        <td><input id="eLabel" value="${escapeAttr(it.label)}"></td>
+        <td><input id="eValue" value="${escapeAttr(it.value)}"></td>
+        <td><input id="eSort" class="num" type="number" value="${it.sort}"></td>
+        <td class="ops"><button onclick="doUpdate(${it.id})">保存</button><button onclick="editingId=null;renderTable()">取消</button></td>
+      </tr>`;
+    }
+    return `<tr>
+      <td class="mono">${it.id ?? '—'}</td>
+      ${isMajor ? `<td class="parent-name">${escapeHtml(collegeName(it.parent_id))}</td>` : ''}
+      <td>${escapeHtml(it.label)}</td>
+      <td class="mono">${escapeHtml(it.value)}</td><td class="mono">${it.sort}</td>
+      <td class="ops">${showOps ? `<button onclick="editingId=${it.id};renderTable()">编辑</button><button class="del" onclick="doDelete(${it.id},'${escapeAttr(it.label)}')">删除</button>` : ''}</td>
+    </tr>`;
+  }).join('');
+}
+function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+function escapeAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/'/g, '&#39;'); }
+
+async function doCreate() {
+  const label = $('aLabel').value.trim(), value = $('aValue').value.trim(), sort = Number($('aSort').value || 0);
+  if (!label || !value) return showMsg('请填写 label 和 value');
+  const body = { label, value, sort };
+  if (currentType === 'major') body.parent_id = Number($('aParent').value);
+  const { status, json } = await api(API_BASE, '/' + currentType, { method: 'POST', body });
+  if (status === 200) { $('aLabel').value = $('aValue').value = ''; showMsg('已新增', true); loadItems(); }
+  else showMsg(json.message || '新增失败');
+}
+
+async function doUpdate(id) {
+  const body = { label: $('eLabel').value.trim(), value: $('eValue').value.trim(), sort: Number($('eSort').value || 0) };
+  if (currentType === 'major') body.parent_id = Number($('eParent').value);
+  const { status, json } = await api(API_BASE, `/${currentType}/${id}`, { method: 'PATCH', body });
+  if (status === 200) { editingId = null; showMsg('已保存', true); loadItems(); }
+  else showMsg(json.message || '保存失败');
+}
+
+async function doDelete(id, label) {
+  if (!confirm(`确认删除字典项「${label}」？`)) return;
+  const { status, json } = await api(API_BASE, `/${currentType}/${id}`, { method: 'DELETE' });
+  if (status === 200) { showMsg('已删除', true); loadItems(); }
+  else showMsg(json.message || '删除失败');
+}
+
+if (localStorage.getItem('access_token') && localStorage.getItem('user')) enter();
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "name": "alumni-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "description": "校友管理平台前端整合工程：portal 展示门户(Vue3，新版 F1 设计) + admin 管理后台(Vue3)",
+  "type": "module",
+  "workspaces": [
+    "portal",
+    "admin"
+  ],
+  "scripts": {
+    "dev": "concurrently -n portal,admin -c blue,green \"npm:dev:portal\" \"npm:dev:admin\"",
+    "dev:portal": "npm run dev -w portal",
+    "dev:admin": "npm run dev -w admin",
+    "build": "npm run build -w portal && npm run build -w admin",
+    "build:portal": "npm run build -w portal",
+    "build:admin": "npm run build -w admin",
+    "preview": "concurrently -n portal,admin -c blue,green \"npm:preview:portal\" \"npm:preview:admin\"",
+    "preview:portal": "npm run preview -w portal",
+    "preview:admin": "npm run preview -w admin"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "dependencies": {
+    "marked": "^18.0.13"
+  }
+}

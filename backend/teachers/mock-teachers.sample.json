@@ -1,0 +1,42 @@
+[
+  {
+    "teacher_no": "T0001",
+    "name": "王建国",
+    "college": "数据产业学院",
+    "major": "大数据技术",
+    "title": "教授",
+    "external_id": "ext-t0001"
+  },
+  {
+    "teacher_no": "T0002",
+    "name": "李秀英",
+    "college": "数据产业学院",
+    "major": "软件技术",
+    "title": "副教授",
+    "external_id": "ext-t0002"
+  },
+  {
+    "teacher_no": "T0003",
+    "name": "张伟",
+    "college": "信息工程学院",
+    "major": "计算机应用技术",
+    "title": "讲师",
+    "external_id": "ext-t0003"
+  },
+  {
+    "teacher_no": "T0004",
+    "name": "陈敏",
+    "college": "信息工程学院",
+    "major": "人工智能技术应用",
+    "title": "助教",
+    "external_id": "ext-t0004"
+  },
+  {
+    "teacher_no": "T0005",
+    "name": "刘洋",
+    "college": "智能建造学院",
+    "major": "建筑工程技术",
+    "title": "讲师",
+    "external_id": "ext-t0005"
+  }
+]

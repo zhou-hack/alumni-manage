@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>附件管理 · 校友管理平台</title>
+<style>
+  :root {
+    --ink: #111318; --ink-2: #5b6068; --ink-3: #9aa0a8;
+    --line: #e3e5e8; --paper: #ffffff; --accent: #c2410c; --err: #b42318;
+    --mono: "Cascadia Code", Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; color: var(--ink); background: var(--paper); line-height: 1.6; min-height: 100vh; }
+  [hidden] { display: none !important; }
+
+  .login-wrap { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 24px; }
+  .login-box { width: 100%; max-width: 360px; }
+  .brand { font-size: 28px; font-weight: 700; letter-spacing: 2px; }
+  .brand-sub { font-family: var(--mono); font-size: 12px; color: var(--ink-3); letter-spacing: 1px; margin: 6px 0 48px; }
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field input, .field select { width: 100%; padding: 11px 12px; font-size: 14px; border: none; border-bottom: 1px solid var(--ink); background: transparent; font-family: inherit; }
+  .field input:focus, .field select:focus { outline: none; border-bottom: 2px solid var(--accent); }
+  .login-error { min-height: 22px; font-size: 13px; color: var(--err); margin: 4px 0 12px; }
+  .btn-primary { width: 100%; padding: 12px; font-size: 15px; font-weight: 600; background: var(--ink); color: #fff; border: none; cursor: pointer; }
+  .btn-primary:hover { background: #2a2e36; }
+
+  .topbar { display: flex; align-items: center; gap: 20px; padding: 0 40px; height: 60px; border-bottom: 2px solid var(--ink); }
+  .topbar .title { font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+  .topbar .spacer { flex: 1; }
+  .topbar .who { font-size: 14px; color: var(--ink-2); }
+  .btn-ghost { padding: 7px 16px; font-size: 13px; font-weight: 600; cursor: pointer; background: #fff; border: 1px solid var(--ink); color: var(--ink); }
+  .btn-ghost:hover { background: #f3f4f6; }
+
+  .content { max-width: 880px; margin: 0 auto; padding: 40px 40px 80px; }
+  .sec { margin-bottom: 48px; }
+  .sec-label { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: 2px; margin-bottom: 16px; }
+  .sec h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+  .row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 14px; }
+  .row .field { margin-bottom: 0; }
+  .row .field input, .row .field select { border: 1px solid var(--ink); padding: 8px 12px; }
+  .btn-act { padding: 9px 22px; font-size: 14px; font-weight: 600; background: var(--ink); color: #fff; border: none; cursor: pointer; }
+  .btn-act:hover { background: #2a2e36; }
+  .btn-act.danger { background: #fff; color: var(--err); border: 1px solid var(--err); }
+  .btn-act.danger:hover { background: #fdf2f1; }
+  .msg { font-size: 13px; margin-top: 10px; min-height: 20px; font-family: var(--mono); white-space: pre-wrap; word-break: break-all; }
+  .msg.err { color: var(--err); }
+  .msg.ok { color: #157f3d; }
+  .hint { font-size: 12px; color: var(--ink-3); margin-top: 6px; }
+  .result-list { font-family: var(--mono); font-size: 12px; margin-top: 12px; }
+  .result-list div { padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .result-list a { color: var(--accent); }
+  #previewBox { margin-top: 16px; }
+  #previewBox img { max-width: 100%; border: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<div class="login-wrap" id="loginView">
+  <div class="login-box">
+    <div class="brand">附件管理</div>
+    <div class="brand-sub">ATTACHMENTS · 跨模块复用组件（登录后上传）</div>
+    <div class="field"><label>手机号</label><input id="phone" type="text" autocomplete="username"></div>
+    <div class="field"><label>密码</label><input id="password" type="password" autocomplete="current-password"></div>
+    <div class="login-error" id="loginError"></div>
+    <button class="btn-primary" onclick="doLogin()">登 录</button>
+  </div>
+</div>
+
+<div id="adminView" hidden>
+  <div class="topbar">
+    <span class="title">附件管理 · Attachments</span>
+    <span class="spacer"></span>
+    <span class="who" id="whoName">—</span>
+    <button class="btn-ghost" onclick="logout()">退出登录</button>
+  </div>
+  <div class="content">
+
+    <section class="sec">
+      <div class="sec-label">UPLOAD</div>
+      <h2>统一上传</h2>
+      <div class="row">
+        <div class="field"><label>biz_type</label>
+          <select id="bizType" style="width:160px">
+            <option value="archive">archive</option>
+            <option value="honor">honor</option>
+            <option value="avatar">avatar</option>
+            <option value="activate">activate</option>
+          </select>
+        </div>
+        <div class="field"><label>文件（jpg/png/webp/pdf，≤10MB，批量 ≤5）</label>
+          <input id="files" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.pdf" style="width:320px">
+        </div>
+        <div class="field"><label>备注（选填）</label><input id="remark" style="width:180px"></div>
+        <button class="btn-act" onclick="doUpload()">上传</button>
+      </div>
+      <div class="msg" id="uploadMsg"></div>
+      <div class="result-list" id="uploadResult"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-label">PREVIEW</div>
+      <h2>预览（权限按归属继承）</h2>
+      <div class="row">
+        <div class="field"><label>附件 ID</label><input id="previewId" type="number" style="width:120px"></div>
+        <button class="btn-act" onclick="doPreview()">加载预览</button>
+      </div>
+      <p class="hint">未绑定附件仅本人可见；未审核业务附件本人+审核角色；已上架公开内容免认证。</p>
+      <div class="msg" id="previewMsg"></div>
+      <div id="previewBox"></div>
+    </section>
+
+    <section class="sec" id="deleteSec" hidden>
+      <div class="sec-label">DELETE</div>
+      <h2>删除（审核角色）</h2>
+      <div class="row">
+        <div class="field"><label>附件 ID</label><input id="deleteId" type="number" style="width:120px"></div>
+        <div class="field"><label>删除原因（写审计日志）</label><input id="deleteReason" style="width:240px"></div>
+        <button class="btn-act danger" onclick="doDelete()">删除</button>
+      </div>
+      <p class="hint">已被引用附件 409；每次删除写 attachment_audit_log（操作人/文件名/biz_type/IP/原因/时间）。</p>
+      <div class="msg" id="deleteMsg"></div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const AUTH_BASE = 'http://127.0.0.1:8080/api/v1/auth';
+const API_BASE = '/api/v1/attachments';
+
+function logApi(method, path, status, body) {
+  const ok = status >= 200 && status < 300;
+  console.groupCollapsed(`%c[ATT] ${method} ${path} → ${status}`, ok ? 'color:#157f3d' : 'color:#b42318');
+  console.log(body); console.groupEnd();
+}
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function token() { return localStorage.getItem('access_token'); }
+function showMsg(el, text, ok) { const m = $(el); m.textContent = text || ''; m.className = 'msg ' + (ok ? 'ok' : 'err'); }
+
+async function doLogin() {
+  const phone = $('phone').value.trim(), raw = $('password').value;
+  if (!phone || !raw) { $('loginError').textContent = '请输入手机号和密码'; return; }
+  const res = await fetch(AUTH_BASE + '/login', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone, password: await sha256Hex(raw) })
+  });
+  const json = await res.json();
+  logApi('POST', '/auth/login', res.status, json);
+  if (res.status === 200) {
+    localStorage.setItem('access_token', json.data.access_token);
+    localStorage.setItem('refresh_token', json.data.refresh_token);
+    localStorage.setItem('user', JSON.stringify(json.data.user));
+    enter();
+  } else {
+    $('loginError').textContent = json.message || '登录失败';
+  }
+}
+$('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function logout() {
+  ['access_token', 'refresh_token', 'user'].forEach(k => localStorage.removeItem(k));
+  $('adminView').hidden = true; $('loginView').hidden = false;
+}
+
+function enter() {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  $('whoName').textContent = `${user.nickname || ''} · ${user.role || ''}`;
+  $('loginView').hidden = true; $('adminView').hidden = false;
+  $('deleteSec').hidden = !(user.role === 'college_admin' || user.role === 'school_admin');
+}
+
+async function doUpload() {
+  const input = $('files');
+  if (!input.files.length) return showMsg('uploadMsg', '请先选择文件');
+  const fd = new FormData();
+  for (const f of input.files) fd.append('file', f);
+  fd.append('biz_type', $('bizType').value);
+  if ($('remark').value.trim()) fd.append('remark', $('remark').value.trim());
+  const res = await fetch(API_BASE, { method: 'POST', headers: { Authorization: 'Bearer ' + token() }, body: fd });
+  const json = await res.json().catch(() => ({ message: '非 JSON 响应' }));
+  logApi('POST', '/attachments', res.status, json);
+  const out = $('uploadResult');
+  if (res.status === 200 || res.status === 201) {
+    showMsg('uploadMsg', `上传完成（HTTP ${res.status}）`, true);
+    const d = json.data;
+    if (d.success) {
+      out.innerHTML =
+        d.success.map(s => `<div>✓ #${s.id} ${s.name} — <a href="#" onclick="quickPreview(${s.id});return false">预览</a></div>`).join('')
+        + d.failed.map(f => `<div style="color:var(--err)">✗ ${f.name} — ${f.reason}</div>`).join('');
+    } else {
+      out.innerHTML = `<div>✓ #${d.id} ${d.name}（${d.mime}，${d.size}B）— <a href="#" onclick="quickPreview(${d.id});return false">预览</a></div>`;
+    }
+    input.value = '';
+  } else {
+    showMsg('uploadMsg', `HTTP ${res.status} ${json.code || ''}：${json.message || '上传失败'}`);
+    out.innerHTML = '';
+  }
+}
+
+function quickPreview(id) { $('previewId').value = id; doPreview(); }
+
+async function doPreview() {
+  const id = $('previewId').value;
+  if (!id) return showMsg('previewMsg', '请输入附件 ID');
+  $('previewBox').innerHTML = '';
+  const res = await fetch(`${API_BASE}/${id}/preview`, { headers: { Authorization: 'Bearer ' + token() } });
+  const mime = res.headers.get('Content-Type') || '';
+  if (res.status === 200) {
+    const blob = await res.blob();
+    logApi('GET', `/attachments/${id}/preview`, res.status, { mime, size: blob.size });
+    showMsg('previewMsg', `HTTP 200 ${mime}（${blob.size}B）`, true);
+    if (mime.startsWith('image/')) {
+      $('previewBox').innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="preview">`;
+    } else if (mime === 'application/pdf') {
+      window.open(URL.createObjectURL(blob), '_blank');
+    }
+  } else {
+    const json = await res.json().catch(() => ({ message: '非 JSON 响应' }));
+    logApi('GET', `/attachments/${id}/preview`, res.status, json);
+    showMsg('previewMsg', `HTTP ${res.status} ${json.code || ''}：${json.message || '失败'}`);
+  }
+}
+
+async function doDelete() {
+  const id = $('deleteId').value;
+  if (!id) return showMsg('deleteMsg', '请输入附件 ID');
+  if (!confirm(`确认删除附件 #${id}？该操作会写审计日志。`)) return;
+  const res = await fetch(`${API_BASE}/${id}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() },
+    body: JSON.stringify({ reason: $('deleteReason').value.trim() || null })
+  });
+  const json = await res.json().catch(() => ({ message: '非 JSON 响应' }));
+  logApi('DELETE', `/attachments/${id}`, res.status, json);
+  showMsg('deleteMsg', `HTTP ${res.status} ${json.code || ''}：${json.message || '已删除'}`, res.status === 200);
+}
+
+if (localStorage.getItem('access_token') && localStorage.getItem('user')) enter();
+</script>
+</body>
+</html>

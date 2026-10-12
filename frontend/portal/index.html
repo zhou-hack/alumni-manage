@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- 移动端 H5 视口：
+         - width=device-width：跟随设备宽度
+         - initial-scale=1：1:1 渲染，避免文字被默认缩放
+         - viewport-fit=cover：允许内容延伸到刘海/灵动岛下方，配合 env(safe-area-inset-*) 留白
+         - maximum-scale=5 / user-scalable=yes：保留无障碍缩放，不锁死字号 -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover"
+    />
+    <!-- 顶部状态栏/地址栏配色：与电脑端 HomeNav 实底深蓝一致 -->
+    <meta name="theme-color" content="#102a5c" />
+    <!-- iOS Safari 把页面"添加到主屏幕"后顶部状态栏样式 -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="description" content="福州软件职业技术学院校友管理平台 · 数字城堡版 —— 无论走多远，城堡永远为你亮灯。" />
+    <title>福软数字城堡 · 校友家园</title>
+
+    <!-- ===== 资源预加载（关键路径） ===== -->
+    <!-- 首屏 Hero 轮播图预加载；浏览器在解析 HTML 时就开始拉图，与 JS 下载并行 -->
+    <link rel="preload" as="image" href="/bgcsvg/front.jpg" fetchpriority="high" />
+    <!-- 顶部 Logo 预加载 -->
+    <link rel="preload" as="image" href="/bgcsvg/school-badge.png" fetchpriority="high" />
+
+    <!-- ===== 字体非阻塞加载 =====
+         - preconnect 在 HTML 解析时建立 TLS 握手，比 link rel=stylesheet 早数百 ms
+         - weights 从 4 个减到 2 个（H5 只用 400 正文 + 700 标题），文件大小约 60% ↓
+         - media=print + onload=this.media='all'：避开 @import 的 render-blocking，
+           让首次渲染（以及城堡碎片开场）不被字体加载推迟约 0.7 s -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=JetBrains+Mono:wght@400&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <!-- 字体加载失败兜底（部分企业网拦截 fonts.googleapis.com） -->
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=JetBrains+Mono:wght@400&display=swap"
+      />
+    </noscript>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

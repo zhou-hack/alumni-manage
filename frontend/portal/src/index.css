@@ -1,0 +1,338 @@
+/* 字体改由 index.html 以非阻塞方式加载（原先的 @import 会阻塞首次渲染约 0.7s） */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: #fff9f0;
+  color: #1f2937;
+  font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+}
+
+/* 通用砖墙纹理 */
+.brick-texture {
+  background-image: repeating-linear-gradient(
+      0deg,
+      rgba(31, 41, 55, 0.04) 0px,
+      rgba(31, 41, 55, 0.04) 1px,
+      transparent 1px,
+      transparent 14px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(31, 41, 55, 0.03) 0px,
+      rgba(31, 41, 55, 0.03) 1px,
+      transparent 1px,
+      transparent 34px
+    );
+}
+
+/* 窗棂金呼吸光 */
+@keyframes lampBreath {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(245, 179, 1, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(245, 179, 1, 0.55);
+  }
+}
+.lamp-breath {
+  animation: lampBreath 2.5s ease-in-out infinite;
+}
+
+/* ===== 城堡碎片组装式入场动画 ===== */
+/* 城堡背景图：提升为独立合成层，使其光栅化结果在开场层卸载（换场）时可被复用，
+   避免换场瞬间重新绘制整屏背景造成的 100ms+ 卡顿 */
+.castle-bg {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* 开场容器：不透明底色（近似天空渐变）。
+   作用有两个：1) 开场层挂载前的 1~2 帧不露出底下的完整城堡；
+   2) 让背景图在加载阶段就被浏览器绘制（被本层遮住），换场时零成本 */
+.castle-intro {
+  background: linear-gradient(180deg, #3d8fe6 0%, #8fd0f5 55%, #eaf7ff 100%);
+}
+
+/* 内联的城堡场景 SVG：定位方式与原来的 <img class="object-cover"> 完全等价 */
+.castle-intro-svg {
+  display: block;
+}
+
+/* 开场期间关闭原本的"整栋升起"动画（城堡本体随后会被拆成碎片） */
+.castle-intro .castle {
+  animation: none;
+}
+
+/* 舞台：1600×700 的 viewBox 坐标系，用 transform 映射到视口（不触发布局） */
+.castle-intro-stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1600px;
+  height: 700px;
+  transform-origin: 0 0;
+}
+
+/* 碎片：每个碎片是独立的 <svg> 合成层（GPU 动画的关键）
+   从屏幕外的四面八方飞回自己的最终位置，终点是 transform 恒等变换
+   只动 transform / opacity，不碰 top / left / width / height，不触发重排 */
+.castle-frag {
+  display: block;
+  position: absolute;
+  /* 碎片散开时带旋转/缩放，包围盒会超出 viewBox —— 必须允许溢出，否则被裁切 */
+  overflow: visible;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+  animation-name: fragAssemble, fragAppear;
+  animation-duration: var(--sd, 800ms), var(--fade-dur, 260ms);
+  animation-timing-function: var(--se, cubic-bezier(0.165, 0.84, 0.44, 1)), ease-out;
+  animation-delay: var(--sdl, 0ms), var(--fade-delay, 40ms);
+  animation-fill-mode: both, both;
+}
+
+/* 散开状态（屏幕外） → 精准归位 */
+@keyframes fragAssemble {
+  0% {
+    transform: translate(var(--sx, 240px), var(--sy, 0px)) rotate(var(--sr, 0deg)) scale(var(--ss, 0.92));
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+}
+
+/* 碎片显现（不做整栋淡入，只是让碎片本身出现） */
+@keyframes fragAppear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 聚焦暗角：把注意力压在中央城堡上 */
+.castle-intro-dim {
+  background: radial-gradient(ellipse at 50% 52%, transparent 36%, rgba(26, 16, 61, 0.3) 100%);
+  animation-name: introDimFade;
+  animation-duration: 1000ms;
+  animation-timing-function: ease-in;
+  animation-fill-mode: both;
+}
+@keyframes introDimFade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* 收尾：最后一块碎片归位后，一道很淡的光从左向右扫过（克制，0.45s） */
+.castle-intro-sweep {
+  background: linear-gradient(100deg, transparent 40%, rgba(255, 246, 214, 0.42) 50%, transparent 60%);
+  opacity: 0;
+  animation-name: introSweep;
+  animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
+  animation-fill-mode: both;
+}
+@keyframes introSweep {
+  0% {
+    transform: translateX(-70%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  76% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(70%);
+    opacity: 0;
+  }
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(37, 99, 235, 0.35);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ===== H5 移动端基础 ===== */
+/* 1) 关掉 iOS Safari 点击高亮与灰底，用自定义 active 反馈替代
+   2) 触摸滚动加速，避免横向滚动被默认惯性吞掉
+   3) Android Chrome 默认会按用户字号偏好放大文本；显式 text-size-adjust: 100%
+      避免小屏 12px 字被自动放成 14-16px 打乱栅格 */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+.h5-root {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  overscroll-behavior-y: contain;
+}
+.h5-root * {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 横向滚动容器：保留滚动条但视觉柔和，避免误以为是普通块
+   - 老版 iOS Safari 需要 -webkit-overflow-scrolling: touch 保持惯性；
+     新版（iOS 13+）已默认带惯性，写了也无副作用，保留兼容。 */
+.h5-scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.h5-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+.h5-scroll-x > * {
+  scroll-snap-align: start;
+}
+
+/* 动态视口高度：三层 fallback，覆盖老设备
+   - 100vh：旧版浏览器 / 安卓 WebView
+   - -webkit-fill-available：iOS Safari 15.3- 的地址栏高度修正
+   - 100dvh：iOS Safari 15.4+ / Android Chrome 108+ 原生支持 */
+.h5-dvh {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  min-height: 100dvh;
+}
+
+/* safe-area 工具类（搭配 Tailwind 的 safe-pt-* 更直观，这里仅兜底） */
+.h5-safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.h5-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 卡片按下反馈：移动端通用的"被按下"视觉态，替代浏览器灰底
+   - touch-action: manipulation 消除老安卓 Chrome 双击放大 300ms 延迟；
+   - 仅做 opacity + 微缩放（0.98），比 scale(0.97) 更克制，避免卡片"塌陷感" */
+.h5-press {
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+  transition:
+    transform 0.18s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.18s ease;
+}
+.h5-press:active {
+  transform: scale(0.98);
+  opacity: 0.85;
+}
+
+/* 流体标题：避免小屏文字过大被截断 */
+.h5-title-fluid {
+  font-size: clamp(20px, 5.4vw, 26px);
+  line-height: 1.25;
+}
+.h5-subtitle-fluid {
+  font-size: clamp(13px, 3.6vw, 15px);
+  line-height: 1.5;
+}
+
+/* 模块小标题（金色短装饰线 + 文字），与电脑端保持一致风格 */
+.h5-eyebrow {
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  letter-spacing: 0.32em;
+  color: #2563eb;
+  font-size: 10px;
+}
+
+/* 表单输入：iOS Safari 在 input font-size < 16px 时会自动放大页面
+   - max(16px, 1rem) 兜底：字号不够 16px 时强制放大，但尊重用户的 rem 偏好 */
+.h5-input {
+  font-size: max(16px, 1rem);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* 动画降级：开启系统级"减少动画"时直接跳到终态 */
+@media (prefers-reduced-motion: reduce) {
+  .h5-press,
+  .h5-press:active {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================================
+ * 移动端体验增强（2026-09-30 H5 全量适配）
+ * ==========================================================================*/
+
+/* 1. 阻止 iOS 在 input 聚焦时自动放大页面（要求 input 字号 ≥ 16px） */
+.h5-root input,
+.h5-root textarea,
+.h5-root select,
+input[type='text'],
+input[type='search'],
+input[type='email'],
+input[type='tel'],
+input[type='url'],
+input[type='password'],
+textarea,
+select {
+  font-size: max(16px, 1rem);
+}
+
+/* 2. 触摸目标最小尺寸（44×44 是 Apple HIG / WCAG 推荐的最小可点区域）；
+ *   桌面端不要套，否则会把卡片/链接撑大 */
+@media (max-width: 768px) {
+  button:not(.no-min-size),
+  a.btn,
+  a.h5-press {
+    min-height: 36px;
+  }
+  /* TabBar 内部按钮（h-16 = 64px）已超阈值，不需强制 */
+}
+
+/* 3. 全局滚动链：避免 H5 上拉到顶后继续拖动把页面刷新 / 露出导航 URL */
+html,
+body {
+  overscroll-behavior-y: contain;
+}
+
+/* 4. 隐藏 iOS Safari 表单自动填充的黄色背景（影响视觉） */
+input:-webkit-autofill,
+textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #fff9f0 inset;
+  -webkit-text-fill-color: #1f2937;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* 5. 移动端减少大背景动画以省电 + 提流畅度 */
+@media (max-width: 768px) {
+  .castle-intro {
+    /* H5 默认不播放城堡开场（避免首屏 1s 等待 + 流量），直接展示完整首页 */
+    display: none;
+  }
+}
